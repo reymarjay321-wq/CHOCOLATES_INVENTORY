@@ -3,7 +3,7 @@ include 'db.php';
 
 $success = "";
 
-// UPDATE SYSTEM NAME
+// SAVE SETTINGS
 if(isset($_POST['save_settings'])){
 
     $system_name = trim($_POST['system_name']);
@@ -37,7 +37,7 @@ if(isset($_POST['save_settings'])){
 
 body{
     font-family:'Poppins',sans-serif;
-    background:#f5f1e8;
+    background:#f6f2ea;
     color:#333;
 }
 
@@ -49,22 +49,25 @@ body{
 /* SIDEBAR */
 
 .sidebar{
-    width:260px;
-    background:white;
+    width:250px;
+    background:#fff;
     padding:30px 20px;
-    box-shadow:0 0 30px rgba(0,0,0,0.06);
     position:fixed;
     height:100vh;
+    border-right:1px solid #eee;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
 }
 
 .logo{
-    text-align:center;
     margin-bottom:40px;
 }
 
 .logo h1{
-    font-size:28px;
+    font-size:30px;
     color:#5d4037;
+    line-height:1.3;
 }
 
 .logo span{
@@ -74,7 +77,7 @@ body{
 .menu{
     display:flex;
     flex-direction:column;
-    gap:12px;
+    gap:10px;
 }
 
 .menu a{
@@ -91,39 +94,93 @@ body{
 
 .menu a:hover,
 .menu a.active{
-    background:#f7f1e3;
+    background:#f6efe2;
     color:#c89b3c;
+}
+
+/* USER */
+
+.sidebar-footer{
+    border-top:1px solid #eee;
+    padding-top:20px;
+}
+
+.user-box{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.user-avatar{
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    background:#c89b3c;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-weight:700;
+}
+
+.user-name{
+    font-weight:600;
+    font-size:14px;
+}
+
+.user-role{
+    font-size:12px;
+    color:#999;
 }
 
 /* MAIN */
 
 .main{
-    margin-left:260px;
-    width:calc(100% - 260px);
+    margin-left:250px;
+    width:calc(100% - 250px);
     padding:30px;
 }
+
+.dashboard-container{
+    background:#fbf8f3;
+    border-radius:25px;
+    padding:30px;
+}
+
+/* HEADER */
 
 .header{
     margin-bottom:30px;
 }
 
 .header h1{
-    font-size:36px;
-    margin-bottom:8px;
+    font-size:34px;
+    margin-bottom:10px;
 }
 
 .header p{
     color:#888;
 }
 
+/* ALERT */
+
+.alert{
+    background:#e8f5e9;
+    color:#2e7d32;
+    padding:15px 20px;
+    border-radius:15px;
+    margin-bottom:20px;
+    font-weight:500;
+}
+
 /* SETTINGS CARD */
 
 .settings-card{
     background:white;
-    border-radius:25px;
+    border-radius:22px;
     padding:35px;
-    box-shadow:0 10px 25px rgba(0,0,0,0.05);
-    max-width:700px;
+    border:1px solid #eee;
+    max-width:750px;
 }
 
 .form-group{
@@ -134,42 +191,42 @@ body{
     display:block;
     margin-bottom:10px;
     font-weight:600;
+    font-size:14px;
 }
 
 .form-group input,
 .form-group select{
     width:100%;
     height:55px;
-    border:none;
-    background:#f7f7f7;
+    border:1px solid #eee;
+    background:#fafafa;
     border-radius:15px;
     padding:0 18px;
     outline:none;
     font-size:15px;
+    transition:0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus{
+    border-color:#c89b3c;
+    background:white;
 }
 
 .save-btn{
     border:none;
     background:#c89b3c;
     color:white;
-    padding:15px 30px;
-    border-radius:15px;
+    padding:15px 28px;
+    border-radius:14px;
     font-weight:600;
     cursor:pointer;
     transition:0.3s;
+    font-size:15px;
 }
 
 .save-btn:hover{
-    transform:translateY(-3px);
-}
-
-.alert{
-    background:#e8f5e9;
-    color:#2e7d32;
-    padding:15px 20px;
-    border-radius:15px;
-    margin-bottom:20px;
-    font-weight:500;
+    transform:translateY(-2px);
 }
 
 /* MOBILE */
@@ -203,36 +260,47 @@ body{
 
     <div class="sidebar">
 
-        <div class="logo">
-            <h1>🍫 R & G <span>Chocolate</span></h1>
+        <div>
+
+            <div class="logo">
+                <h1>🍫 R & G <br><span>Chocolate</span></h1>
+            </div>
+
+            <div class="menu">
+
+                <a href="index.php">
+                    <i class="fas fa-chart-pie"></i>
+                    Dashboard
+                </a>
+
+                <a href="analytics.php">
+                    <i class="fas fa-chart-line"></i>
+                    Analytics
+                </a>
+
+                <a href="settings.php" class="active">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </a>
+
+            </div>
+
         </div>
 
-        <div class="menu">
+        <div class="sidebar-footer">
 
-            <a href="index.php">
-                <i class="fas fa-chart-pie"></i>
-                Dashboard
-            </a>
+            <div class="user-box">
 
-            <a href="inventory.php">
-                <i class="fas fa-box"></i>
-                Inventory
-            </a>
+                <div class="user-avatar">
+                    A
+                </div>
 
-            <a href="create.php">
-                <i class="fas fa-plus-circle"></i>
-                Add Product
-            </a>
+                <div>
+                    <div class="user-name">Administrator</div>
+                    <div class="user-role">Admin</div>
+                </div>
 
-            <a href="analytics.php">
-                <i class="fas fa-chart-line"></i>
-                Analytics
-            </a>
-
-            <a href="settings.php" class="active">
-                <i class="fas fa-cog"></i>
-                Settings
-            </a>
+            </div>
 
         </div>
 
@@ -242,82 +310,86 @@ body{
 
     <div class="main">
 
-        <div class="header">
+        <div class="dashboard-container">
 
-            <h1>System Settings</h1>
+            <div class="header">
 
-            <p>
-                Manage your inventory system preferences.
-            </p>
+                <h1>System Settings</h1>
 
-        </div>
+                <p>
+                    Manage your inventory system preferences.
+                </p>
 
-        <?php if($success): ?>
+            </div>
 
-        <div class="alert">
-            <?= $success ?>
-        </div>
+            <?php if($success): ?>
 
-        <?php endif; ?>
+            <div class="alert">
+                <?= $success ?>
+            </div>
 
-        <div class="settings-card">
+            <?php endif; ?>
 
-            <form method="POST">
+            <div class="settings-card">
 
-                <!-- SYSTEM NAME -->
+                <form method="POST">
 
-                <div class="form-group">
+                    <!-- SYSTEM NAME -->
 
-                    <label>System Name</label>
+                    <div class="form-group">
 
-                    <input
-                    type="text"
-                    name="system_name"
-                    value="R & G Chocolate Inventory">
+                        <label>System Name</label>
 
-                </div>
+                        <input
+                        type="text"
+                        name="system_name"
+                        value="R & G Chocolate Inventory">
 
-                <!-- ADMIN NAME -->
+                    </div>
 
-                <div class="form-group">
+                    <!-- ADMIN NAME -->
 
-                    <label>Administrator Name</label>
+                    <div class="form-group">
 
-                    <input
-                    type="text"
-                    name="admin_name"
-                    value="Administrator">
+                        <label>Administrator Name</label>
 
-                </div>
+                        <input
+                        type="text"
+                        name="admin_name"
+                        value="Administrator">
 
-                <!-- THEME -->
+                    </div>
 
-                <div class="form-group">
+                    <!-- THEME -->
 
-                    <label>Theme</label>
+                    <div class="form-group">
 
-                    <select name="theme">
+                        <label>Theme</label>
 
-                        <option>Light Mode</option>
-                        <option>Dark Mode</option>
+                        <select name="theme">
 
-                    </select>
+                            <option>Light Mode</option>
+                            <option>Dark Mode</option>
 
-                </div>
+                        </select>
 
-                <!-- SAVE BUTTON -->
+                    </div>
 
-                <button
-                type="submit"
-                name="save_settings"
-                class="save-btn">
+                    <!-- SAVE BUTTON -->
 
-                    <i class="fas fa-save"></i>
-                    Save Settings
+                    <button
+                    type="submit"
+                    name="save_settings"
+                    class="save-btn">
 
-                </button>
+                        <i class="fas fa-save"></i>
+                        Save Settings
 
-            </form>
+                    </button>
+
+                </form>
+
+            </div>
 
         </div>
 

@@ -15,14 +15,12 @@ if (isset($_POST['submit'])) {
     $manufacturer = trim($_POST['manufacturer']);
     $supplier_name = trim($_POST['supplier_name']);
 
-    // VALIDATION
     if (empty($product_name)) {
 
         $error = "Product name is required!";
 
     } else {
 
-        // INSERT PRODUCT
         $stmt = $conn->prepare("
             INSERT INTO chocolates
             (
@@ -108,88 +106,178 @@ if (isset($_POST['submit'])) {
 
 <title>Add Chocolate</title>
 
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
 <style>
 
-/* RESET */
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
 }
 
-/* BODY */
 body{
     font-family:'Poppins',sans-serif;
-    background:linear-gradient(to bottom,#f8f5f1,#efe7dd);
-    min-height:100vh;
-    padding:40px 20px;
+    background:#f6f2ea;
+    color:#333;
 }
 
-/* CONTAINER */
-.container{
-    max-width:1000px;
-    margin:auto;
-    background:white;
-    border-radius:30px;
-    overflow:hidden;
-    box-shadow:0 20px 50px rgba(0,0,0,0.12);
-    animation:fadeUp 0.6s ease;
+.wrapper{
+    display:flex;
+    min-height:100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+    width:250px;
+    background:#fff;
+    padding:30px 20px;
+    position:fixed;
+    height:100vh;
+    border-right:1px solid #eee;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.logo{
+    margin-bottom:40px;
+}
+
+.logo h1{
+    font-size:30px;
+    color:#5d4037;
+    line-height:1.3;
+}
+
+.logo span{
+    color:#c89b3c;
+}
+
+.menu{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.menu a{
+    text-decoration:none;
+    color:#777;
+    padding:15px 18px;
+    border-radius:14px;
+    font-weight:500;
+    transition:0.3s;
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.menu a:hover,
+.menu a.active{
+    background:#f6efe2;
+    color:#c89b3c;
+}
+
+/* USER */
+
+.sidebar-footer{
+    border-top:1px solid #eee;
+    padding-top:20px;
+}
+
+.user-box{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.user-avatar{
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    background:#c89b3c;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-weight:700;
+}
+
+.user-name{
+    font-weight:600;
+    font-size:14px;
+}
+
+.user-role{
+    font-size:12px;
+    color:#999;
+}
+
+/* MAIN */
+
+.main{
+    margin-left:250px;
+    width:calc(100% - 250px);
+    padding:30px;
+}
+
+.dashboard-container{
+    background:#fbf8f3;
+    border-radius:25px;
+    padding:30px;
 }
 
 /* HEADER */
+
 .header{
-    position:relative;
-    background:linear-gradient(135deg,#4e342e,#8d6e63);
-    padding:40px;
-    text-align:center;
-    color:white;
+    margin-bottom:30px;
 }
 
-.header h2{
-    font-size:2.3rem;
+.header h1{
+    font-size:34px;
     margin-bottom:10px;
 }
 
 .header p{
-    opacity:0.9;
-    font-size:15px;
-}
-
-/* CONTENT */
-.content{
-    padding:40px;
+    color:#888;
 }
 
 /* ALERT */
+
 .alert{
     padding:16px 20px;
-    border-radius:14px;
-    margin-bottom:25px;
+    border-radius:15px;
+    margin-bottom:20px;
     font-weight:500;
 }
 
 .alert-error{
     background:#ffebee;
     color:#c62828;
-    border-left:5px solid #e53935;
 }
 
-/* FORM GRID */
+/* FORM */
+
+.form-card{
+    background:white;
+    border-radius:22px;
+    padding:35px;
+    border:1px solid #eee;
+}
+
 .form-grid{
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:25px;
+    gap:22px;
 }
 
 .full{
     grid-column:span 2;
 }
 
-/* INPUT GROUP */
 .input-group{
     display:flex;
     flex-direction:column;
@@ -198,41 +286,37 @@ body{
 .input-group label{
     margin-bottom:10px;
     font-weight:600;
-    color:#5d4037;
+    font-size:14px;
 }
 
-/* INPUTS */
 input,
 select{
     width:100%;
-    padding:15px 18px;
-    border-radius:16px;
-    border:2px solid #eee;
+    height:55px;
+    border:1px solid #eee;
     background:#fafafa;
+    border-radius:15px;
+    padding:0 18px;
+    outline:none;
     font-size:15px;
     transition:0.3s;
-    outline:none;
 }
 
 input:focus,
 select:focus{
-    border-color:#ff9800;
+    border-color:#c89b3c;
     background:white;
-    box-shadow:0 8px 25px rgba(255,152,0,0.15);
-    transform:translateY(-2px);
 }
 
-/* FILE INPUT */
 input[type="file"]{
-    background:white;
-    padding:18px;
-    border:2px dashed #ccc;
-    cursor:pointer;
+    padding:14px;
+    height:auto;
 }
 
 /* BUTTONS */
+
 .button-group{
-    margin-top:35px;
+    margin-top:30px;
     display:flex;
     gap:15px;
     flex-wrap:wrap;
@@ -241,7 +325,7 @@ input[type="file"]{
 .btn{
     padding:15px 28px;
     border:none;
-    border-radius:50px;
+    border-radius:14px;
     text-decoration:none;
     color:white;
     font-weight:600;
@@ -250,54 +334,40 @@ input[type="file"]{
     align-items:center;
     gap:10px;
     transition:0.3s;
-    font-size:15px;
-    box-shadow:0 8px 20px rgba(0,0,0,0.15);
 }
 
 .btn:hover{
-    transform:translateY(-4px);
+    transform:translateY(-2px);
 }
 
 .btn-primary{
-    background:linear-gradient(135deg,#ff9800,#f57c00);
+    background:#c89b3c;
 }
 
 .btn-secondary{
-    background:linear-gradient(135deg,#9e9e9e,#757575);
+    background:#757575;
 }
 
-/* ICON BOX */
-.icon-box{
-    width:90px;
-    height:90px;
-    background:rgba(255,255,255,0.12);
-    margin:0 auto 20px;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    backdrop-filter:blur(10px);
-}
+/* MOBILE */
 
-.icon-box i{
-    font-size:40px;
-}
+@media(max-width:900px){
 
-/* ANIMATION */
-@keyframes fadeUp{
-
-    from{
-        opacity:0;
-        transform:translateY(30px);
+    .sidebar{
+        position:relative;
+        width:100%;
+        height:auto;
     }
 
-    to{
-        opacity:1;
-        transform:translateY(0);
+    .wrapper{
+        flex-direction:column;
+    }
+
+    .main{
+        margin-left:0;
+        width:100%;
     }
 }
 
-/* RESPONSIVE */
 @media(max-width:768px){
 
     .form-grid{
@@ -306,14 +376,6 @@ input[type="file"]{
 
     .full{
         grid-column:span 1;
-    }
-
-    .content{
-        padding:25px;
-    }
-
-    .header h2{
-        font-size:1.8rem;
     }
 
     .btn{
@@ -328,216 +390,240 @@ input[type="file"]{
 
 <body>
 
-<div class="container">
+<div class="wrapper">
 
-    <!-- HEADER -->
-    <div class="header">
+    <!-- SIDEBAR -->
 
-        <div class="icon-box">
-            <i class="fas fa-cookie-bite"></i>
+<div class="sidebar">
+
+    <div>
+
+        <div class="logo">
+            <h1>🍫 R & G <br><span>Chocolate</span></h1>
         </div>
 
-        <h2>Add New Chocolate</h2>
+        <div class="menu">
 
-        <p>
-            Add delicious chocolate products into your inventory system.
-        </p>
+            <!-- DASHBOARD -->
+
+            <a href="index.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : ''; ?>">
+                <i class="fas fa-chart-pie"></i>
+                Dashboard
+            </a>
+
+            <!-- ANALYTICS -->
+
+            <a href="analytics.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'analytics.php' ? 'active' : ''; ?>">
+                <i class="fas fa-chart-line"></i>
+                Analytics
+            </a>
+
+            <!-- SETTINGS -->
+
+            <a href="settings.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'settings.php' ? 'active' : ''; ?>">
+                <i class="fas fa-cog"></i>
+                Settings
+            </a>
+
+        </div>
 
     </div>
 
-    <!-- CONTENT -->
-    <div class="content">
+    <!-- USER -->
 
-        <?php if (!empty($error)): ?>
+    <div class="sidebar-footer">
 
-        <div class="alert alert-error">
-            <i class="fas fa-exclamation-circle"></i>
-            <?= htmlspecialchars($error) ?>
+        <div class="user-box">
+
+            <div class="user-avatar">
+                A
+            </div>
+
+            <div>
+                <div class="user-name">Administrator</div>
+                <div class="user-role">Admin</div>
+            </div>
+
         </div>
 
-        <?php endif; ?>
+    </div>
 
-        <form method="POST" enctype="multipart/form-data">
+</div>
 
-            <div class="form-grid">
+    <!-- MAIN -->
 
-                <!-- PRODUCT NAME -->
-                <div class="input-group full">
+    <div class="main">
 
-                    <label>
-                        <i class="fas fa-box"></i>
-                        Product Name
-                    </label>
+        <div class="dashboard-container">
 
-                    <input
-                    type="text"
-                    name="product_name"
-                    placeholder="Enter chocolate product name"
-                    required>
+            <div class="header">
 
-                </div>
+                <h1>Add New Chocolate</h1>
 
-                <!-- BRAND -->
-                <div class="input-group">
-
-                    <label>
-                        <i class="fas fa-copyright"></i>
-                        Brand
-                    </label>
-
-                    <input
-                    type="text"
-                    name="brand"
-                    placeholder="Cadbury">
-
-                </div>
-
-                <!-- CATEGORY -->
-                <div class="input-group">
-
-                    <label>
-                        <i class="fas fa-layer-group"></i>
-                        Category
-                    </label>
-
-                    <select name="category" required>
-
-                        <option value="">Select Category</option>
-
-                        <option value="Milk Chocolate">
-                            Milk Chocolate
-                        </option>
-
-                        <option value="Dark Chocolate">
-                            Dark Chocolate
-                        </option>
-
-                        <option value="White Chocolate">
-                            White Chocolate
-                        </option>
-
-                    </select>
-
-                </div>
-
-                <!-- QUANTITY -->
-                <div class="input-group">
-
-                    <label>
-                        <i class="fas fa-cubes"></i>
-                        Quantity
-                    </label>
-
-                    <input
-                    type="number"
-                    name="quantity"
-                    placeholder="0"
-                    required>
-
-                </div>
-
-                <!-- PRICE -->
-                <div class="input-group">
-
-                    <label>
-                        <i class="fas fa-peso-sign"></i>
-                        Price
-                    </label>
-
-                    <input
-                    type="number"
-                    step="0.01"
-                    name="price"
-                    placeholder="0.00"
-                    required>
-
-                </div>
-
-                <!-- EXPIRATION -->
-                <div class="input-group">
-
-                    <label>
-                        <i class="fas fa-calendar"></i>
-                        Expiration Date
-                    </label>
-
-                    <input
-                    type="date"
-                    name="expiration_date">
-
-                </div>
-
-                <!-- MANUFACTURER -->
-                <div class="input-group full">
-
-                    <label>
-                        <i class="fas fa-industry"></i>
-                        Manufacturer
-                    </label>
-
-                    <input
-                    type="text"
-                    name="manufacturer"
-                    placeholder="Manufacturer name">
-
-                </div>
-
-                <!-- SUPPLIER -->
-                <div class="input-group full">
-
-                    <label>
-                        <i class="fas fa-truck"></i>
-                        Supplier
-                    </label>
-
-                    <input
-                    type="text"
-                    name="supplier_name"
-                    placeholder="Supplier name">
-
-                </div>
-
-                <!-- IMAGES -->
-                <div class="input-group full">
-
-                    <label>
-                        <i class="fas fa-image"></i>
-                        Upload Images
-                    </label>
-
-                    <input
-                    type="file"
-                    name="images[]"
-                    multiple
-                    accept="image/*">
-
-                </div>
+                <p>
+                    Add delicious chocolate products into your inventory.
+                </p>
 
             </div>
 
-            <!-- BUTTONS -->
-            <div class="button-group">
+            <?php if (!empty($error)): ?>
 
-                <button
-                type="submit"
-                name="submit"
-                class="btn btn-primary">
+            <div class="alert alert-error">
+                <?= htmlspecialchars($error) ?>
+            </div>
 
-                    <i class="fas fa-plus"></i>
-                    Add Chocolate
+            <?php endif; ?>
 
-                </button>
+            <div class="form-card">
 
-                <a href="index.php" class="btn btn-secondary">
+                <form method="POST" enctype="multipart/form-data">
 
-                    <i class="fas fa-arrow-left"></i>
-                    Back
+                    <div class="form-grid">
 
-                </a>
+                        <div class="input-group full">
+
+                            <label>Product Name</label>
+
+                            <input
+                            type="text"
+                            name="product_name"
+                            placeholder="Enter chocolate name"
+                            required>
+
+                        </div>
+
+                        <div class="input-group">
+
+                            <label>Brand</label>
+
+                            <input
+                            type="text"
+                            name="brand"
+                            placeholder="Cadbury">
+
+                        </div>
+
+                        <div class="input-group">
+
+                            <label>Category</label>
+
+                            <select name="category" required>
+
+                                <option value="">Select Category</option>
+
+                                <option value="Milk Chocolate">
+                                    Milk Chocolate
+                                </option>
+
+                                <option value="Dark Chocolate">
+                                    Dark Chocolate
+                                </option>
+
+                                <option value="White Chocolate">
+                                    White Chocolate
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="input-group">
+
+                            <label>Quantity</label>
+
+                            <input
+                            type="number"
+                            name="quantity"
+                            placeholder="0"
+                            required>
+
+                        </div>
+
+                        <div class="input-group">
+
+                            <label>Price</label>
+
+                            <input
+                            type="number"
+                            step="0.01"
+                            name="price"
+                            placeholder="0.00"
+                            required>
+
+                        </div>
+
+                        <div class="input-group">
+
+                            <label>Expiration Date</label>
+
+                            <input
+                            type="date"
+                            name="expiration_date">
+
+                        </div>
+
+                        <div class="input-group full">
+
+                            <label>Manufacturer</label>
+
+                            <input
+                            type="text"
+                            name="manufacturer"
+                            placeholder="Manufacturer name">
+
+                        </div>
+
+                        <div class="input-group full">
+
+                            <label>Supplier</label>
+
+                            <input
+                            type="text"
+                            name="supplier_name"
+                            placeholder="Supplier name">
+
+                        </div>
+
+                        <div class="input-group full">
+
+                            <label>Upload Images</label>
+
+                            <input
+                            type="file"
+                            name="images[]"
+                            multiple
+                            accept="image/*">
+
+                        </div>
+
+                    </div>
+
+                    <div class="button-group">
+
+                        <button
+                        type="submit"
+                        name="submit"
+                        class="btn btn-primary">
+
+                            <i class="fas fa-plus"></i>
+                            Add Chocolate
+
+                        </button>
+
+                        <a href="index.php" class="btn btn-secondary">
+
+                            <i class="fas fa-arrow-left"></i>
+                            Back
+
+                        </a>
+
+                    </div>
+
+                </form>
 
             </div>
 
-        </form>
+        </div>
 
     </div>
 
