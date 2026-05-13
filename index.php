@@ -34,6 +34,13 @@ if (isset($_GET['search'])) {
 
 $totalRecords = $result ? $result->num_rows : 0;
 
+// TOTAL STOCK
+$totalStockQuery = $conn->query("SELECT SUM(quantity) AS total_stock FROM chocolates");
+$totalStock = $totalStockQuery->fetch_assoc()['total_stock'] ?? 0;
+
+// TOTAL VALUE
+$totalValueQuery = $conn->query("SELECT SUM(quantity * price) AS total_value FROM chocolates");
+$totalValue = $totalValueQuery->fetch_assoc()['total_value'] ?? 0;
 
 // DELETE ALL
 if (isset($_POST['delete_all'])) {
@@ -47,671 +54,805 @@ if (isset($_POST['delete_all'])) {
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>R & G Chocolate Inventory</title>
-
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<title>Chocolate Inventory Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
 <style>
 
-/* RESET */
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
 }
 
-/* BODY */
 body{
     font-family:'Poppins',sans-serif;
-    background:linear-gradient(to bottom,#f8f5f1,#efe7dd);
+    background:#f5f1e8;
     color:#333;
-    overflow-x:hidden;
 }
 
-/* CONTAINER */
-.container{
-    width:100%;
+.wrapper{
+    display:flex;
     min-height:100vh;
 }
 
-/* HEADER */
-.header{
-    position:relative;
-    height:320px;
+/* SIDEBAR */
+
+.sidebar{
+    width:260px;
+    background:#ffffff;
+    padding:30px 20px;
     display:flex;
-    align-items:center;
-    justify-content:center;
-    overflow:hidden;
-    border-bottom-left-radius:30px;
-    border-bottom-right-radius:30px;
-    box-shadow:0 15px 40px rgba(0,0,0,0.2);
+    flex-direction:column;
+    justify-content:space-between;
+    box-shadow:0 0 30px rgba(0,0,0,0.06);
+    position:fixed;
+    left:0;
+    top:0;
+    height:100vh;
 }
 
-.header-video{
-    position:absolute;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-}
-
-.header-overlay{
-    position:absolute;
-    width:100%;
-    height:100%;
-    background:linear-gradient(
-        135deg,
-        rgba(20,10,5,0.75),
-        rgba(0,0,0,0.6)
-    );
-}
-
-.header-content{
-    position:relative;
-    z-index:2;
+.logo{
     text-align:center;
-    color:white;
-    animation:fadeUp 1s ease;
+    margin-bottom:40px;
 }
 
-.header-content h1{
-    font-size:4rem;
-    font-weight:700;
-    text-shadow:0 5px 20px rgba(0,0,0,0.5);
+.logo h1{
+    font-size:28px;
+    color:#5d4037;
 }
 
-.header-content p{
-    margin-top:15px;
-    font-size:18px;
+.logo span{
+    color:#c89b3c;
 }
 
-/* ABOUT BUTTON */
-.about-btn{
-    position:absolute;
-    top:25px;
-    right:25px;
-    padding:14px 24px;
-    border-radius:50px;
+.menu{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.menu a{
     text-decoration:none;
-    color:white;
-    background:rgba(255,255,255,0.12);
-    border:1px solid rgba(255,255,255,0.3);
-    backdrop-filter:blur(10px);
-    font-weight:600;
+    color:#777;
+    padding:15px 18px;
+    border-radius:14px;
+    font-size:15px;
+    font-weight:500;
+    transition:0.3s;
     display:flex;
     align-items:center;
-    gap:10px;
-    transition:0.3s;
-    z-index:10;
+    gap:12px;
 }
 
-.about-btn:hover{
-    transform:translateY(-3px);
-    background:rgba(255,255,255,0.2);
+.menu a:hover,
+.menu a.active{
+    background:#f7f1e3;
+    color:#c89b3c;
 }
 
-/* CONTENT */
-.content{
-    max-width:1400px;
-    margin:auto;
-    padding:40px 30px;
+.sidebar-footer{
+    border-top:1px solid #eee;
+    padding-top:20px;
 }
 
-/* CONTROLS */
-.controls{
+.user-box{
     display:flex;
-    flex-wrap:wrap;
-    gap:18px;
     align-items:center;
-    margin-bottom:35px;
+    gap:12px;
 }
 
-/* SEARCH */
-.search-wrapper{
-    flex:1;
-    min-width:320px;
-}
-
-.search-form{
-    position:relative;
-}
-
-.search-input{
-    width:100%;
-    height:68px;
-    border:none;
-    border-radius:50px;
-    padding:0 80px 0 28px;
-    font-size:17px;
-    background:white;
-    box-shadow:0 8px 30px rgba(0,0,0,0.08);
-    outline:none;
-    transition:0.3s;
-}
-
-.search-input:focus{
-    transform:translateY(-2px);
-    box-shadow:0 12px 35px rgba(255,152,0,0.25);
-}
-
-.search-button{
-    position:absolute;
-    right:10px;
-    top:50%;
-    transform:translateY(-50%);
-    width:52px;
-    height:52px;
-    border:none;
+.user-avatar{
+    width:50px;
+    height:50px;
     border-radius:50%;
-    background:linear-gradient(135deg,#ff9800,#ff6d00);
+    background:#c89b3c;
     color:white;
-    font-size:18px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-weight:700;
+}
+
+.user-name{
+    font-weight:600;
+}
+
+.user-role{
+    font-size:13px;
+    color:#999;
+}
+
+/* MAIN */
+
+.main{
+    margin-left:260px;
+    width:calc(100% - 260px);
+    padding:30px;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+.search-box{
+    flex:1;
+    position:relative;
+    max-width:450px;
+}
+
+.search-box input{
+    width:100%;
+    height:55px;
+    border:none;
+    border-radius:18px;
+    background:white;
+    padding:0 60px 0 20px;
+    outline:none;
+    font-size:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.05);
+}
+
+.search-box button{
+    position:absolute;
+    right:8px;
+    top:8px;
+    width:40px;
+    height:40px;
+    border:none;
+    border-radius:12px;
+    background:#c89b3c;
+    color:white;
     cursor:pointer;
 }
 
-.search-button:hover{
-    transform:translateY(-50%) scale(1.08);
-}
-
-/* BUTTONS */
-.btn{
-    border:none;
-    padding:16px 28px;
-    border-radius:50px;
+.add-btn{
+    background:#c89b3c;
     color:white;
-    text-decoration:none;
+    border:none;
+    padding:15px 24px;
+    border-radius:16px;
     font-weight:600;
-    display:inline-flex;
+    text-decoration:none;
+    display:flex;
     align-items:center;
     gap:10px;
-    cursor:pointer;
     transition:0.3s;
-    box-shadow:0 8px 25px rgba(0,0,0,0.15);
 }
 
-.btn:hover{
-    transform:translateY(-4px);
+.add-btn:hover{
+    transform:translateY(-3px);
 }
 
-.btn-add{
-    background:linear-gradient(135deg,#ff9800,#ff6d00);
+/* STATS */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    margin-bottom:30px;
 }
 
-.btn-danger{
-    background:linear-gradient(135deg,#ef5350,#c62828);
+.card{
+    background:white;
+    border-radius:24px;
+    padding:25px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.05);
 }
 
-.btn-primary{
-    background:linear-gradient(135deg,#42a5f5,#1565c0);
+.card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
 }
 
-.btn-success{
-    background:linear-gradient(135deg,#66bb6a,#2e7d32);
+.card-icon{
+    width:55px;
+    height:55px;
+    border-radius:18px;
+    background:#f7f1e3;
+    color:#c89b3c;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:20px;
+}
+
+.card h2{
+    font-size:34px;
+    margin-bottom:5px;
+}
+
+.card p{
+    color:#888;
+    font-size:14px;
 }
 
 /* TABLE */
-.table-wrapper{
-    overflow-x:auto;
-    border-radius:25px;
+
+.table-container{
     background:white;
-    box-shadow:0 15px 40px rgba(0,0,0,0.08);
+    border-radius:28px;
+    padding:25px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.05);
+    overflow:auto;
 }
 
-table{
+.table-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+    gap:15px;
+}
+
+.table-header h2{
+    font-size:24px;
+}
+
+.delete-all{
+    background:#ef5350;
+    color:white;
+    border:none;
+    padding:12px 18px;
+    border-radius:14px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.inventory-table{
     width:100%;
     border-collapse:collapse;
+    min-width:1100px;
 }
 
-th{
-    background:linear-gradient(135deg,#5d4037,#3e2723);
-    color:white;
-    padding:22px;
+.inventory-table thead{
+    background:#faf7f1;
 }
 
-td{
-    padding:22px;
+.inventory-table th{
+    padding:18px;
+    text-align:left;
+    font-size:14px;
+    color:#888;
+    font-weight:600;
+}
+
+.inventory-table td{
+    padding:18px;
     border-bottom:1px solid #f1f1f1;
+    font-size:14px;
 }
 
-tr:hover{
-    background:#fff8f0;
+.inventory-table tr:hover{
+    background:#fafafa;
 }
 
-/* IMAGE */
+.product-cell{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
 .product-img{
     width:65px;
     height:65px;
-    border-radius:16px;
+    border-radius:18px;
+    overflow:hidden;
+    background:#f3f3f3;
+    flex-shrink:0;
+}
+
+.product-img img{
+    width:100%;
+    height:100%;
     object-fit:cover;
 }
 
-/* BADGES */
-.category-badge{
-    padding:8px 18px;
-    border-radius:30px;
-    background:#e3f2fd;
-    color:#1565c0;
+.no-image{
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:11px;
+    color:#aaa;
+}
+
+.product-name{
+    font-weight:600;
+    margin-bottom:4px;
+}
+
+.brand{
+    color:#999;
     font-size:13px;
+}
+
+.category-badge{
+    padding:8px 14px;
+    border-radius:30px;
+    background:#f7f1e3;
+    color:#c89b3c;
+    font-size:12px;
     font-weight:600;
 }
 
 .qty-badge{
-    padding:8px 18px;
+    padding:8px 14px;
     border-radius:30px;
     background:#e8f5e9;
     color:#2e7d32;
-    font-size:13px;
+    font-size:12px;
     font-weight:600;
 }
 
-/* ALERT */
+.price{
+    font-weight:700;
+    color:#c89b3c;
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+}
+
+.action-btn{
+    width:42px;
+    height:42px;
+    border-radius:12px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:white;
+    text-decoration:none;
+}
+
+.edit{
+    background:#42a5f5;
+}
+
+.delete{
+    background:#ef5350;
+}
+
 .alert{
-    background:white;
-    border-left:6px solid #43a047;
-    padding:20px;
+    background:#e8f5e9;
+    color:#2e7d32;
+    padding:16px 20px;
     border-radius:18px;
-    margin-bottom:25px;
-    box-shadow:0 8px 25px rgba(0,0,0,0.08);
+    margin-bottom:20px;
+    font-weight:500;
 }
 
-/* NO DATA */
-.no-data{
-    background:white;
-    padding:70px 30px;
+.empty{
     text-align:center;
-    border-radius:30px;
-    box-shadow:0 15px 35px rgba(0,0,0,0.08);
+    padding:80px 20px;
 }
 
-/* MODAL */
-.about-modal{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.7);
-    backdrop-filter:blur(5px);
-    z-index:999;
+.empty i{
+    font-size:80px;
+    color:#ddd;
+    margin-bottom:20px;
 }
 
-.modal-content{
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    width:90%;
-    max-width:550px;
-    background:white;
-    border-radius:30px;
-    padding:40px;
-    text-align:center;
+.empty h2{
+    margin-bottom:10px;
 }
 
-.close-modal{
-    position:absolute;
-    right:20px;
-    top:15px;
-    font-size:28px;
-    cursor:pointer;
-}
+@media(max-width:1000px){
 
-/* FOOTER */
-.footer{
-    text-align:center;
-    padding:30px;
-    color:#777;
-    font-size:14px;
-}
-
-/* ANIMATION */
-@keyframes fadeUp{
-    from{
-        opacity:0;
-        transform:translateY(30px);
-    }
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
-}
-
-/* MOBILE */
-@media(max-width:768px){
-
-    .header{
-        height:280px;
+    .sidebar{
+        position:relative;
+        width:100%;
+        height:auto;
     }
 
-    .header-content h1{
-        font-size:2.2rem;
-    }
-
-    .controls{
+    .wrapper{
         flex-direction:column;
     }
 
-    .search-wrapper{
+    .main{
         width:100%;
+        margin-left:0;
+    }
+}
+
+@media(max-width:768px){
+
+    .main{
+        padding:20px;
     }
 
-    .btn{
-        width:100%;
-        justify-content:center;
+    .stats{
+        grid-template-columns:1fr;
     }
 
-    td,th{
-        padding:15px;
+    .topbar{
+        flex-direction:column;
+        align-items:stretch;
+    }
+
+    .search-box{
+        max-width:100%;
     }
 }
 
 </style>
 </head>
-
 <body>
 
-<div class="container">
+<div class="wrapper">
 
-<!-- HEADER -->
-<div class="header">
+    <!-- SIDEBAR -->
 
-    <video autoplay muted loop class="header-video">
-        <source src="img\uploads\ssstik.io_@maximumraw_1776216849081.mp4">
-    </video>
+    <div class="sidebar">
 
-    <div class="header-overlay"></div>
+        <div>
 
-    <a href="#" class="about-btn" onclick="openAbout()">
-        <i class="fas fa-info-circle"></i> About
-    </a>
+            <div class="logo">
+                <h1>🍫 R & G <span>Chocolate</span></h1>
+            </div>
 
-    <div class="header-content">
-        <h1>🍫 R & G Chocolate Inventory</h1>
-        <p>Total Items: <?= $totalRecords ?></p>
+            <div class="menu">
+
+                <a href="index.php" class="active">
+                    <i class="fas fa-chart-pie"></i>
+                    Dashboard
+                </a>
+
+                <a href="index.php">
+                    <i class="fas fa-box"></i>
+                    Inventory
+                </a>
+
+                <a href="create.php">
+                    <i class="fas fa-plus-circle"></i>
+                    Add Product
+                </a>
+
+                <a href="analytics.php">
+                    <i class="fas fa-chart-line"></i>
+                    Analytics
+                </a>
+
+                <a href="settings.php">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="sidebar-footer">
+
+            <div class="user-box">
+
+                <div class="user-avatar">
+                    RG
+                </div>
+
+                <div>
+                    <div class="user-name">Administrator</div>
+                    <div class="user-role">Inventory Manager</div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MAIN -->
+
+    <div class="main">
+
+        <!-- TOPBAR -->
+
+        <div class="topbar">
+
+            <form method="GET" class="search-box">
+
+                <input
+                type="text"
+                name="search"
+                placeholder="Search chocolates..."
+                value="<?= htmlspecialchars($search) ?>">
+
+                <button type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+
+            </form>
+
+            <a href="create.php" class="add-btn">
+                <i class="fas fa-plus"></i>
+                Add Product
+            </a>
+
+        </div>
+
+
+        <!-- ALERT -->
+
+        <?php if(isset($_GET['success'])): ?>
+
+        <div class="alert">
+            Action completed successfully!
+        </div>
+
+        <?php endif; ?>
+
+
+        <!-- STATS -->
+
+        <div class="stats">
+
+            <div class="card">
+
+                <div class="card-top">
+                    <div>
+                        <p>Total Products</p>
+                        <h2><?= $totalRecords ?></h2>
+                    </div>
+
+                    <div class="card-icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <div class="card-top">
+                    <div>
+                        <p>Total Stock</p>
+                        <h2><?= $totalStock ?></h2>
+                    </div>
+
+                    <div class="card-icon">
+                        <i class="fas fa-cubes"></i>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <div class="card-top">
+                    <div>
+                        <p>Inventory Value</p>
+                        <h2>₱<?= number_format($totalValue,0) ?></h2>
+                    </div>
+
+                    <div class="card-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <div class="card-top">
+                    <div>
+                        <p>Categories</p>
+                        <h2>6+</h2>
+                    </div>
+
+                    <div class="card-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- TABLE -->
+
+        <div class="table-container">
+
+            <div class="table-header">
+
+                <h2>Chocolate Inventory</h2>
+
+                <?php if($totalRecords > 0): ?>
+
+                <form method="POST">
+
+                    <button
+                    type="submit"
+                    name="delete_all"
+                    class="delete-all"
+                    onclick="return confirm('Delete all products?')">
+
+                        <i class="fas fa-trash"></i>
+                        Delete All
+
+                    </button>
+
+                </form>
+
+                <?php endif; ?>
+
+            </div>
+
+
+            <?php if($totalRecords > 0): ?>
+
+            <table class="inventory-table">
+
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Supplier</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Expiration</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                <?php while($row = $result->fetch_assoc()): ?>
+
+                <?php
+
+                $imgStmt = $conn->prepare("
+                SELECT image FROM chocolate_images
+                WHERE chocolate_id=?
+                LIMIT 1
+                ");
+
+                $imgStmt->bind_param("i", $row['id']);
+                $imgStmt->execute();
+
+                $img = $imgStmt->get_result()->fetch_assoc();
+
+                ?>
+
+                <tr>
+
+                    <td>
+
+                        <div class="product-cell">
+
+                            <div class="product-img">
+
+                                <?php if($img): ?>
+
+                                <img src="uploads/<?= htmlspecialchars($img['image']) ?>">
+
+                                <?php else: ?>
+
+                                <div class="no-image">
+                                    No Image
+                                </div>
+
+                                <?php endif; ?>
+
+                            </div>
+
+                            <div>
+                                <div class="product-name">
+                                    <?= htmlspecialchars($row['product_name']) ?>
+                                </div>
+
+                                <div class="brand">
+                                    <?= htmlspecialchars($row['brand']) ?>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </td>
+
+                    <td>
+                        <span class="category-badge">
+                            <?= htmlspecialchars($row['category']) ?>
+                        </span>
+                    </td>
+
+                    <td>
+                        <?= htmlspecialchars($row['supplier_name']) ?>
+                    </td>
+
+                    <td>
+                        <span class="qty-badge">
+                            <?= $row['quantity'] ?> pcs
+                        </span>
+                    </td>
+
+                    <td class="price">
+                        ₱<?= number_format($row['price'],2) ?>
+                    </td>
+
+                    <td>
+                        <?= date('M j, Y', strtotime($row['expiration_date'])) ?>
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <a
+                            href="update.php?id=<?= $row['id'] ?>"
+                            class="action-btn edit">
+
+                                <i class="fas fa-edit"></i>
+
+                            </a>
+
+                            <a
+                            href="delete.php?id=<?= $row['id'] ?>"
+                            class="action-btn delete"
+                            onclick="return confirm('Delete this item?')">
+
+                                <i class="fas fa-trash"></i>
+
+                            </a>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                <?php endwhile; ?>
+
+                </tbody>
+
+            </table>
+
+            <?php else: ?>
+
+            <div class="empty">
+
+                <i class="fas fa-box-open"></i>
+
+                <h2>No Products Found</h2>
+
+                <p style="color:#999;margin-top:10px;">
+                    Add your first chocolate product.
+                </p>
+
+                <br>
+
+                <a href="create.php" class="add-btn" style="display:inline-flex;">
+                    <i class="fas fa-plus"></i>
+                    Add Product
+                </a>
+
+            </div>
+
+            <?php endif; ?>
+
+        </div>
+
     </div>
 
 </div>
-
-<div class="content">
-
-<?php if(isset($_GET['success'])): ?>
-
-<div class="alert">
-    <i class="fas fa-check-circle"></i>
-    Action completed successfully!
-</div>
-
-<?php endif; ?>
-
-<!-- CONTROLS -->
-<div class="controls">
-
-<div class="search-wrapper">
-
-<form method="GET" class="search-form">
-
-<input
-type="text"
-name="search"
-class="search-input"
-placeholder="Search chocolate..."
-value="<?= htmlspecialchars($search) ?>"
-autocomplete="off">
-
-<button type="submit" class="search-button">
-    <i class="fas fa-search"></i>
-</button>
-
-</form>
-
-</div>
-
-<a href="create.php" class="btn btn-add">
-    <i class="fas fa-plus"></i> Add New
-</a>
-
-<?php if($totalRecords > 0): ?>
-
-<form method="POST">
-
-<button
-type="submit"
-name="delete_all"
-class="btn btn-danger"
-onclick="return confirm('Delete all items?')">
-
-<i class="fas fa-trash"></i> Delete All
-
-</button>
-
-</form>
-
-<?php endif; ?>
-
-<?php if($search): ?>
-
-<a href="index.php" class="btn btn-success">
-    <i class="fas fa-sync-alt"></i> Reset
-</a>
-
-<?php endif; ?>
-
-</div>
-
-<!-- TABLE -->
-<?php if($totalRecords > 0): ?>
-
-<div class="table-wrapper">
-
-<table>
-
-<thead>
-
-<tr>
-<th><i class="fas fa-image"></i></th>
-<th>ID</th>
-<th>Name</th>
-<th>Brand</th>
-<th>Category</th>
-<th>Price</th>
-<th>Expiry</th>
-<th>Supplier</th>
-<th>Qty</th>
-<th>Actions</th>
-</tr>
-
-</thead>
-
-<tbody>
-
-<?php while($row = $result->fetch_assoc()): ?>
-
-<tr>
-
-<td>
-
-<?php
-
-$imgStmt = $conn->prepare("
-SELECT image FROM chocolate_images
-WHERE chocolate_id=?
-LIMIT 1
-");
-
-$imgStmt->bind_param("i", $row['id']);
-$imgStmt->execute();
-
-$img = $imgStmt->get_result()->fetch_assoc();
-
-?>
-
-<?php if($img): ?>
-
-<img
-src="uploads/<?= htmlspecialchars($img['image']) ?>"
-class="product-img">
-
-<?php else: ?>
-
-No Image
-
-<?php endif; ?>
-
-</td>
-
-<td><strong>#<?= $row['id'] ?></strong></td>
-
-<td>
-<strong><?= htmlspecialchars($row['product_name']) ?></strong>
-</td>
-
-<td><?= htmlspecialchars($row['brand']) ?></td>
-
-<td>
-<span class="category-badge">
-<?= htmlspecialchars($row['category']) ?>
-</span>
-</td>
-
-<td>
-<strong>₱<?= number_format($row['price'],2) ?></strong>
-</td>
-
-<td>
-<?= date('M j, Y', strtotime($row['expiration_date'])) ?>
-</td>
-
-<td>
-<?= htmlspecialchars($row['supplier_name']) ?>
-</td>
-
-<td>
-<span class="qty-badge">
-<?= $row['quantity'] ?>
-</span>
-</td>
-
-<td style="display:flex; gap:10px;">
-
-<a
-href="update.php?id=<?= $row['id'] ?>"
-class="btn btn-primary"
-style="padding:12px 16px;">
-
-<i class="fas fa-edit"></i>
-
-</a>
-
-<a
-href="delete.php?id=<?= $row['id'] ?>"
-class="btn btn-danger"
-style="padding:12px 16px;"
-onclick="return confirm('Delete this item?')">
-
-<i class="fas fa-trash"></i>
-
-</a>
-
-</td>
-
-</tr>
-
-<?php endwhile; ?>
-
-</tbody>
-
-</table>
-
-</div>
-
-<?php else: ?>
-
-<div class="no-data">
-
-<i class="fas fa-box-open"
-style="font-size:5rem;color:#ddd;margin-bottom:20px;">
-</i>
-
-<h2>No chocolates found</h2>
-
-<p style="margin:15px 0;color:#777;">
-Start by adding your first chocolate product.
-</p>
-
-<a href="create.php" class="btn btn-add">
-    <i class="fas fa-plus"></i> Add Chocolate
-</a>
-
-</div>
-
-<?php endif; ?>
-
-</div>
-
-<!-- FOOTER -->
-<div class="footer">
-    <i class="fas fa-cookie-bite"></i>
-    © 2026 R & G Chocolate Inventory System
-</div>
-
-</div>
-
-<!-- ABOUT MODAL -->
-<div id="aboutModal" class="about-modal">
-
-<div class="modal-content">
-
-<span class="close-modal" onclick="closeAbout()">
-    &times;
-</span>
-
-<div style="margin-bottom:20px;">
-
-<i class="fas fa-cookie-bite"
-style="font-size:70px;color:#ff9800;">
-</i>
-
-</div>
-
-<h2>R & G Chocolate Inventory</h2>
-
-<p style="margin-top:15px; line-height:1.8; color:#666;">
-
-This system helps manage chocolate inventory,
-track products, monitor stock quantity,
-and organize supplier information efficiently.
-
-</p>
-
-</div>
-
-</div>
-
-<script>
-
-function openAbout(){
-    document.getElementById('aboutModal').style.display='block';
-}
-
-function closeAbout(){
-    document.getElementById('aboutModal').style.display='none';
-}
-
-window.onclick=function(event){
-
-    let modal=document.getElementById('aboutModal');
-
-    if(event.target==modal){
-        modal.style.display='none';
-    }
-}
-
-</script>
 
 </body>
 </html>
