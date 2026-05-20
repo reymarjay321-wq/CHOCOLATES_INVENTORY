@@ -4,7 +4,7 @@ include 'db.php';
 // SEARCH
 $search = "";
 
-if (isset($_GET['search'])) {
+if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
 
     $search = trim($_GET['search']);
 
@@ -18,7 +18,7 @@ if (isset($_GET['search'])) {
         ORDER BY date_added DESC
     ");
 
-    $like = "%$search%";
+    $like = "%{$search}%";
 
     $stmt->bind_param(
         "sssss",
@@ -45,7 +45,7 @@ $totalRecords = $result ? $result->num_rows : 0;
 
 // TOTAL STOCK
 $totalStockQuery = $conn->query("
-SELECT SUM(quantity) AS total_stock 
+SELECT SUM(quantity) AS total_stock
 FROM chocolates
 ");
 
@@ -53,7 +53,7 @@ $totalStock = $totalStockQuery->fetch_assoc()['total_stock'] ?? 0;
 
 // TOTAL VALUE
 $totalValueQuery = $conn->query("
-SELECT SUM(quantity * price) AS total_value 
+SELECT SUM(quantity * price) AS total_value
 FROM chocolates
 ");
 
@@ -157,8 +157,6 @@ body{
     color:#c89b3c;
 }
 
-
-
 .sidebar-footer{
     border-top:1px solid #eee;
     padding-top:20px;
@@ -194,7 +192,6 @@ body{
 
 /* MAIN */
 
-
 .main{
     margin-left:250px;
     width:calc(100% - 250px);
@@ -217,29 +214,66 @@ body{
     gap:20px;
 }
 
+/* SEARCH */
+
 .search-box{
     flex:1;
+}
+
+.search-wrapper{
     position:relative;
-}
-
-.search-box input{
     width:100%;
-    height:55px;
-    border:none;
-    border-radius:16px;
-    background:white;
-    padding:0 20px 0 50px;
-    outline:none;
-    font-size:14px;
-    border:1px solid #eee;
 }
 
-.search-box i{
+.search-wrapper input{
+    width:100%;
+    height:58px;
+    border:none;
+    border-radius:18px;
+    background:white;
+    padding:0 90px 0 52px;
+    outline:none;
+    font-size:15px;
+    border:1px solid #eee;
+    transition:0.3s;
+    box-shadow:0 4px 12px rgba(0,0,0,0.03);
+}
+
+.search-wrapper input:focus{
+    border-color:#c89b3c;
+    box-shadow:0 8px 20px rgba(200,155,60,0.12);
+}
+
+.search-icon{
     position:absolute;
     left:18px;
-    top:18px;
+    top:50%;
+    transform:translateY(-50%);
     color:#999;
+    font-size:15px;
 }
+
+.clear-search{
+    position:absolute;
+    right:18px;
+    top:50%;
+    transform:translateY(-50%);
+    text-decoration:none;
+    color:#c89b3c;
+    font-size:14px;
+    font-weight:600;
+    transition:0.3s;
+}
+
+.clear-search:hover{
+    color:#8d6e63;
+}
+
+.hidden-search-btn{
+    display:none;
+}
+
+/* ADD BUTTON */
 
 .add-btn{
     background:#c89b3c;
@@ -254,6 +288,8 @@ body{
     gap:10px;
 }
 
+/* STATS */
+
 .stats{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
@@ -267,11 +303,8 @@ body{
     padding:22px;
     display:flex;
     align-items:center;
-
-
     gap:18px;
     border:1px solid #f1f1f1;
-
 }
 
 .card-icon{
@@ -287,12 +320,8 @@ body{
 }
 
 .card h2{
-
-    font-size:34px;
-
     font-size:30px;
     margin-top:5px;
-
 }
 
 .card p{
@@ -307,6 +336,7 @@ body{
     border-radius:20px;
     padding:25px;
     border:1px solid #eee;
+    overflow:auto;
 }
 
 .table-header{
@@ -314,14 +344,11 @@ body{
     justify-content:space-between;
     align-items:center;
     margin-bottom:20px;
-
     flex-wrap:wrap;
-
 }
 
 .table-header h2{
     font-size:22px;
-
 }
 
 .delete-all{
@@ -337,37 +364,24 @@ body{
 .inventory-table{
     width:100%;
     border-collapse:collapse;
-
     min-width:1300px;
 }
 
 .inventory-table thead{
     background:#faf7f1;
-
 }
 
 .inventory-table th{
     text-align:left;
-
     color:#888;
     font-size:14px;
-}
-
-.inventory-table td{
-    padding:18px;
-    border-bottom:1px solid #f1f1f1;
-
     padding:15px;
-    font-size:13px;
-    color:#888;
-    background:#faf8f4;
 }
 
 .inventory-table td{
     padding:15px;
     border-bottom:1px solid #f3f3f3;
     font-size:14px;
-
 }
 
 .product-cell{
@@ -453,8 +467,8 @@ body{
 }
 
 .delete{
-
-    background:#ef5350;
+    background:#ffefef;
+    color:#ef5350;
 }
 
 .alert{
@@ -468,9 +482,6 @@ body{
 .empty{
     text-align:center;
     padding:80px 20px;
-    background:#ffefef;
-    color:#ef5350;
-
 }
 
 @media(max-width:1000px){
@@ -528,7 +539,6 @@ body{
 
         </div>
 
-
         <div class="sidebar-footer">
 
             <div class="user-box">
@@ -546,53 +556,77 @@ body{
 
         </div>
 
-
+    </div>
 
     <!-- MAIN -->
 
     <div class="main">
 
-        <div class="topbar">
         <div class="dashboard-container">
 
             <!-- TOPBAR -->
 
             <div class="topbar">
 
+                <!-- FIXED SEARCH -->
+
                 <form method="GET" class="search-box">
 
-                    <i class="fas fa-search"></i>
+                    <div class="search-wrapper">
 
-        </div>
+                        <i class="fas fa-search search-icon"></i>
 
-        <?php if(isset($_GET['success'])): ?>
+                        <input
+                        type="text"
+                        name="search"
+                        placeholder="Search chocolates..."
+                        value="<?= htmlspecialchars($search) ?>"
+                        autocomplete="off">
 
-        <div class="alert">
-            Action completed successfully!
-        </div>
-                    <input
-                    type="text"
-                    name="search"
-                    placeholder="Search chocolates, brands, categories..."
-                    value="<?= htmlspecialchars($search) ?>">
+                        <?php if(!empty($search)): ?>
+
+                        <a href="index.php" class="clear-search">
+                            Clear
+                        </a>
+
+                        <?php endif; ?>
+
+                        <button type="submit" class="hidden-search-btn">
+                            Search
+                        </button>
+
+                    </div>
 
                 </form>
 
+                <!-- ADD PRODUCT -->
+
                 <a href="create.php" class="add-btn">
+
                     <i class="fas fa-plus"></i>
+
                     Add Product
+
                 </a>
 
-        <!-- STATS -->
             </div>
+
+            <!-- ALERT -->
+
+            <?php if(isset($_GET['success'])): ?>
+
+            <div class="alert">
+                Action completed successfully!
+            </div>
+
+            <?php endif; ?>
 
             <!-- STATS -->
 
             <div class="stats">
 
-            <div class="card">
-                <div class="card-top">
                 <div class="card">
+
                     <div class="card-icon">
                         <i class="fas fa-box"></i>
                     </div>
@@ -601,40 +635,34 @@ body{
                         <p>Total Products</p>
                         <h2><?= $totalRecords ?></h2>
                     </div>
+
                 </div>
 
                 <div class="card">
+
                     <div class="card-icon">
                         <i class="fas fa-cubes"></i>
                     </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-top">
 
                     <div>
                         <p>Total Stock</p>
                         <h2><?= $totalStock ?></h2>
                     </div>
+
                 </div>
 
                 <div class="card">
+
                     <div class="card-icon">
                         <i class="fas fa-wallet"></i>
                     </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-top">
 
                     <div>
                         <p>Inventory Value</p>
                         <h2>₱<?= number_format($totalValue,0) ?></h2>
                     </div>
+
                 </div>
-            </div>
 
             </div>
 
@@ -648,7 +676,6 @@ body{
 
                     <?php if($totalRecords > 0): ?>
 
-        <!-- TABLE -->
                     <form method="POST">
 
                         <button
@@ -668,19 +695,23 @@ body{
 
                 </div>
 
+                <?php if($totalRecords > 0): ?>
+
                 <table class="inventory-table">
 
                     <thead>
+
                         <tr>
-                            <th>Image</th>
                             <th>Product</th>
                             <th>Category</th>
+                            <th>Manufacturer</th>
                             <th>Supplier</th>
                             <th>Quantity</th>
                             <th>Price</th>
                             <th>Expiration</th>
                             <th>Actions</th>
                         </tr>
+
                     </thead>
 
                     <tbody>
@@ -695,7 +726,6 @@ body{
                     LIMIT 1
                     ");
 
-            <?php if($totalRecords > 0): ?>
                     $imgStmt->bind_param("i", $row['id']);
                     $imgStmt->execute();
 
@@ -703,94 +733,40 @@ body{
 
                     ?>
 
-                <thead>
-
-                    <tr>
-                        <th>Product</th>
-                        <th>Category</th>
-                        <th>Manufacturer</th>
-                        <th>Supplier</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                        <th>Expiration</th>
-                        <th>Actions</th>
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                <?php while($row = $result->fetch_assoc()): ?>
-
-                <?php
-
-                $imgStmt = $conn->prepare("
-                SELECT image FROM chocolate_images
-                WHERE chocolate_id=?
-                LIMIT 1
-                ");
-
-                $imgStmt->bind_param("i", $row['id']);
-                $imgStmt->execute();
                     <tr>
 
                         <td>
 
-                            <div class="product-img">
+                            <div class="product-cell">
 
-                                <?php if($img): ?>
+                                <div class="product-img">
 
-                                <img src="uploads/<?= htmlspecialchars($img['image']) ?>">
+                                    <?php if($img): ?>
 
-                                <?php else: ?>
+                                    <img src="uploads/<?= htmlspecialchars($img['image']) ?>">
 
-                                <div class="no-image">
-                                    No Image
+                                    <?php else: ?>
+
+                                    <div class="no-image">
+                                        No Image
+                                    </div>
+
+                                    <?php endif; ?>
+
                                 </div>
 
-                                <?php endif; ?>
+                                <div>
 
-                            </div>
+                                    <div class="product-name">
+                                        <?= htmlspecialchars($row['product_name']) ?>
+                                    </div>
 
-                            <div>
+                                    <div class="brand">
+                                        <?= htmlspecialchars($row['brand']) ?>
+                                    </div>
 
-                                <div class="product-name">
-                                    <?= htmlspecialchars($row['product_name']) ?>
                                 </div>
 
-                                <div class="brand">
-                                    <?= htmlspecialchars($row['brand']) ?>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </td>
-
-                    <td>
-                        <span class="category-badge">
-                            <?= htmlspecialchars($row['category']) ?>
-                        </span>
-                    </td>
-
-                    <td>
-                        <?= htmlspecialchars($row['manufacturer']) ?>
-                    </td>
-
-                    <td>
-                        <?= htmlspecialchars($row['supplier_name']) ?>
-                    </td>
-                        </td>
-
-                        <td>
-
-                            <div class="product-name">
-                                <?= htmlspecialchars($row['product_name']) ?>
-                            </div>
-
-                            <div class="brand">
-                                <?= htmlspecialchars($row['brand']) ?>
                             </div>
 
                         </td>
@@ -799,6 +775,10 @@ body{
                             <span class="category-badge">
                                 <?= htmlspecialchars($row['category']) ?>
                             </span>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($row['manufacturer']) ?>
                         </td>
 
                         <td>
@@ -811,10 +791,6 @@ body{
                             </span>
                         </td>
 
-                            <a
-                            href="delete.php?id=<?= $row['id'] ?>"
-                            class="action-btn delete"
-                            onclick="return confirm('Delete this product?')">
                         <td class="price">
                             ₱<?= number_format($row['price'],2) ?>
                         </td>
@@ -855,6 +831,16 @@ body{
                     </tbody>
 
                 </table>
+
+                <?php else: ?>
+
+                <div class="empty">
+
+                    <h2>No Products Found</h2>
+
+                </div>
+
+                <?php endif; ?>
 
             </div>
 

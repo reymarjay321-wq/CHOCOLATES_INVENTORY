@@ -2,16 +2,22 @@
 include 'db.php';
 
 // TOTAL PRODUCTS
-$totalProducts = $conn->query("SELECT COUNT(*) AS total FROM chocolates")
-->fetch_assoc()['total'];
+$totalProducts = $conn->query("
+SELECT COUNT(*) AS total 
+FROM chocolates
+")->fetch_assoc()['total'];
 
 // TOTAL STOCK
-$totalStock = $conn->query("SELECT SUM(quantity) AS stock FROM chocolates")
-->fetch_assoc()['stock'] ?? 0;
+$totalStock = $conn->query("
+SELECT SUM(quantity) AS stock 
+FROM chocolates
+")->fetch_assoc()['stock'] ?? 0;
 
 // TOTAL VALUE
-$totalValue = $conn->query("SELECT SUM(quantity * price) AS value FROM chocolates")
-->fetch_assoc()['value'] ?? 0;
+$totalValue = $conn->query("
+SELECT SUM(quantity * price) AS value 
+FROM chocolates
+")->fetch_assoc()['value'] ?? 0;
 
 // LOW STOCK
 $lowStock = $conn->query("
@@ -90,6 +96,7 @@ body{
     display:flex;
     flex-direction:column;
     justify-content:space-between;
+    overflow:hidden;
 }
 
 .logo{
@@ -133,6 +140,7 @@ body{
 /* USER */
 
 .sidebar-footer{
+    margin-top:auto;
     border-top:1px solid #eee;
     padding-top:20px;
 }
@@ -141,6 +149,9 @@ body{
     display:flex;
     align-items:center;
     gap:12px;
+    background:white;
+    border-radius:16px;
+    padding:12px;
 }
 
 .user-avatar{
@@ -198,14 +209,9 @@ body{
 
 .analytics-grid{
     display:grid;
-
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:25px;
-    margin-bottom:30px;
-
     grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
     gap:20px;
-
+    margin-bottom:30px;
 }
 
 .card{
@@ -329,31 +335,29 @@ canvas{
 
         </div>
 
+        <!-- USER -->
+
         <div class="sidebar-footer">
 
             <div class="user-box">
- 
-            <a href="analytics.php" class="active">
-                <i class="fas fa-chart-line"></i>
-                Analytics
-            </a>
 
                 <div class="user-avatar">
                     A
                 </div>
 
                 <div>
-                    <div class="user-name">Administrator</div>
-                    <div class="user-role">Admin</div>
+
+                    <div class="user-name">
+                        Administrator
+                    </div>
+
+                    <div class="user-role">
+                        Admin
+                    </div>
+
                 </div>
 
             </div>
- 
-
-            <a href="settings.php">
-                <i class="fas fa-cog"></i>
-                Settings
-            </a>
 
         </div>
 
@@ -365,6 +369,8 @@ canvas{
 
         <div class="dashboard-container">
 
+            <!-- HEADER -->
+
             <div class="header">
 
                 <h1>Analytics Dashboard</h1>
@@ -375,14 +381,11 @@ canvas{
 
             </div>
 
- 
-        <!-- CARDS -->
+            <!-- CARDS -->
 
-        <div class="analytics-grid">
             <div class="analytics-grid">
 
                 <!-- TOTAL PRODUCTS -->
- 
 
                 <div class="card">
 
@@ -399,15 +402,9 @@ canvas{
 
                 </div>
 
-
-            </div>
-
-            <div class="card">
-
                 <!-- TOTAL STOCK -->
 
                 <div class="card">
-
 
                     <div class="icon">
                         <i class="fas fa-cubes"></i>
@@ -422,15 +419,9 @@ canvas{
 
                 </div>
 
-
-            </div>
-
-            <div class="card">
-
                 <!-- TOTAL VALUE -->
 
                 <div class="card">
-
 
                     <div class="icon">
                         <i class="fas fa-wallet"></i>
@@ -445,15 +436,9 @@ canvas{
 
                 </div>
 
-
-            </div>
-
-            <div class="card">
-
                 <!-- LOW STOCK -->
 
                 <div class="card">
-
 
                     <div class="icon">
                         <i class="fas fa-exclamation-triangle"></i>
@@ -468,15 +453,9 @@ canvas{
 
                 </div>
 
-
-            </div>
-
-            <div class="card">
-
                 <!-- EXPIRED -->
 
                 <div class="card">
-
 
                     <div class="icon">
                         <i class="fas fa-calendar-times"></i>
@@ -493,17 +472,17 @@ canvas{
 
             </div>
 
-        </div>
+            <!-- GRAPH -->
 
-        <!-- GRAPH -->
+            <div class="chart-container">
 
-        <div class="chart-container">
+                <h2>
+                    Chocolate Categories Graph
+                </h2>
 
-            <h2>
-                Chocolate Categories Graph
-            </h2>
+                <canvas id="categoryChart"></canvas>
 
-            <canvas id="categoryChart"></canvas>
+            </div>
 
         </div>
 
