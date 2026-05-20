@@ -2,18 +2,17 @@
 include 'db.php';
 
 $error = "";
-$success = "";
 
 if (isset($_POST['submit'])) {
 
-    $product_name = trim($_POST['product_name']);
-    $brand = trim($_POST['brand']);
-    $category = trim($_POST['category']);
-    $quantity = (int)$_POST['quantity'];
-    $price = (float)$_POST['price'];
+    $product_name   = trim($_POST['product_name']);
+    $brand          = trim($_POST['brand']);
+    $category       = trim($_POST['category']);
+    $quantity       = (int)$_POST['quantity'];
+    $price          = (float)$_POST['price'];
     $expiration_date = !empty($_POST['expiration_date']) ? $_POST['expiration_date'] : null;
-    $manufacturer = trim($_POST['manufacturer']);
-    $supplier_name = trim($_POST['supplier_name']);
+    $manufacturer   = trim($_POST['manufacturer']);
+    $supplier_name  = trim($_POST['supplier_name']);
 
     if (empty($product_name)) {
 
@@ -23,16 +22,7 @@ if (isset($_POST['submit'])) {
 
         $stmt = $conn->prepare("
             INSERT INTO chocolates
-            (
-                product_name,
-                brand,
-                category,
-                quantity,
-                price,
-                expiration_date,
-                manufacturer,
-                supplier_name
-            )
+            (product_name, brand, category, quantity, price, expiration_date, manufacturer, supplier_name)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ");
 
@@ -52,7 +42,6 @@ if (isset($_POST['submit'])) {
 
             $product_id = $conn->insert_id;
 
-            // IMAGE UPLOAD
             if (!empty($_FILES['images']['name'][0])) {
 
                 $targetDir = "uploads/";
@@ -72,9 +61,7 @@ if (isset($_POST['submit'])) {
                     if (move_uploaded_file($tmp, $targetDir . $newName)) {
 
                         $stmtImg = $conn->prepare("
-                            INSERT INTO chocolate_images
-                            (chocolate_id, image)
-                            VALUES (?, ?)
+                            INSERT INTO chocolate_images (chocolate_id, image) VALUES (?, ?)
                         ");
 
                         $stmtImg->bind_param("is", $product_id, $newName);
@@ -87,7 +74,6 @@ if (isset($_POST['submit'])) {
             exit();
 
         } else {
-
             $error = "Insert failed!";
         }
 
@@ -95,10 +81,8 @@ if (isset($_POST['submit'])) {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
 <meta charset="UTF-8">
@@ -107,7 +91,6 @@ if (isset($_POST['submit'])) {
 <title>Add Chocolate</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
 <style>
@@ -135,12 +118,14 @@ body{
     width:250px;
     background:#fff;
     padding:30px 20px;
-    position:fixed;
-    height:100vh;
-    border-right:1px solid #eee;
     display:flex;
     flex-direction:column;
     justify-content:space-between;
+    position:fixed;
+    left:0;
+    top:0;
+    height:100vh;
+    border-right:1px solid #eee;
 }
 
 .logo{
@@ -168,6 +153,7 @@ body{
     color:#777;
     padding:15px 18px;
     border-radius:14px;
+    font-size:15px;
     font-weight:500;
     transition:0.3s;
     display:flex;
@@ -180,8 +166,6 @@ body{
     background:#f6efe2;
     color:#c89b3c;
 }
-
-/* USER */
 
 .sidebar-footer{
     border-top:1px solid #eee;
@@ -227,31 +211,64 @@ body{
 .dashboard-container{
     background:#fbf8f3;
     border-radius:25px;
-    padding:30px;
+    padding:25px;
 }
 
-/* HEADER */
+/* TOPBAR */
 
-.header{
-    margin-bottom:30px;
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+    gap:20px;
 }
 
-.header h1{
-    font-size:34px;
-    margin-bottom:10px;
+.topbar h2{
+    font-size:22px;
+    color:#5d4037;
 }
 
-.header p{
+.topbar p{
+    font-size:13px;
     color:#888;
+    margin-top:3px;
+}
+
+.back-btn{
+    background:white;
+    color:#777;
+    border:1px solid #eee;
+    padding:14px 22px;
+    border-radius:14px;
+    font-weight:600;
+    font-size:14px;
+    text-decoration:none;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    transition:0.3s;
+    box-shadow:0 4px 12px rgba(0,0,0,0.03);
+    white-space:nowrap;
+    flex-shrink:0;
+}
+
+.back-btn:hover{
+    border-color:#c89b3c;
+    color:#c89b3c;
 }
 
 /* ALERT */
 
 .alert{
     padding:16px 20px;
-    border-radius:15px;
+    border-radius:18px;
     margin-bottom:20px;
+    font-size:14px;
     font-weight:500;
+    display:flex;
+    align-items:center;
+    gap:12px;
 }
 
 .alert-error{
@@ -259,87 +276,182 @@ body{
     color:#c62828;
 }
 
-/* FORM */
+/* FORM CARD */
 
 .form-card{
     background:white;
-    border-radius:22px;
-    padding:35px;
+    border-radius:20px;
+    padding:25px;
     border:1px solid #eee;
 }
+
+/* SECTION */
+
+.section-title{
+    font-size:15px;
+    font-weight:600;
+    color:#5d4037;
+    margin-bottom:18px;
+    padding-bottom:12px;
+    border-bottom:1px solid #f3f3f3;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.section-title i{
+    width:32px;
+    height:32px;
+    border-radius:10px;
+    background:#f8efd9;
+    color:#c89b3c;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+}
+
+.form-section{
+    margin-bottom:28px;
+}
+
+.form-section:last-of-type{
+    margin-bottom:0;
+}
+
+/* GRID */
 
 .form-grid{
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:22px;
+    gap:18px;
 }
 
 .full{
     grid-column:span 2;
 }
 
+/* INPUT GROUP */
+
 .input-group{
     display:flex;
     flex-direction:column;
+    gap:8px;
 }
 
 .input-group label{
-    margin-bottom:10px;
+    font-size:13px;
     font-weight:600;
-    font-size:14px;
+    color:#555;
 }
 
-
-/* INPUTS */
-input{
-
-input,
-select{
-
+.input-group input,
+.input-group select{
     width:100%;
-    height:55px;
+    height:52px;
     border:1px solid #eee;
     background:#fafafa;
-    border-radius:15px;
+    border-radius:14px;
     padding:0 18px;
     outline:none;
-    font-size:15px;
+    font-family:'Poppins',sans-serif;
+    font-size:14px;
+    color:#333;
     transition:0.3s;
+    appearance:none;
+    -webkit-appearance:none;
 }
 
+.input-group input::placeholder{
+    color:#bbb;
+}
 
-input:focus{
-    border-color:#ff9800;
-=======
-input:focus,
-select:focus{
+.input-group input:focus,
+.input-group select:focus{
     border-color:#c89b3c;
-
     background:white;
+    box-shadow:0 4px 16px rgba(200,155,60,0.1);
 }
 
-input[type="file"]{
-    padding:14px;
-    height:auto;
+/* FILE UPLOAD */
+
+.file-label{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    padding:28px 20px;
+    border:2px dashed #eee;
+    border-radius:14px;
+    background:#fafafa;
+    cursor:pointer;
+    transition:0.3s;
+    text-align:center;
+    position:relative;
 }
 
-/* BUTTONS */
+.file-label:hover{
+    border-color:#c89b3c;
+    background:#fdf8f0;
+}
+
+.file-label input[type="file"]{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    cursor:pointer;
+    width:100%;
+    height:100%;
+}
+
+.file-icon{
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    background:#f8efd9;
+    color:#c89b3c;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+}
+
+.file-text{
+    font-size:14px;
+    font-weight:600;
+    color:#555;
+}
+
+.file-hint{
+    font-size:12px;
+    color:#aaa;
+}
+
+.file-names{
+    font-size:13px;
+    color:#c89b3c;
+    font-weight:600;
+}
+
+/* BUTTON GROUP */
 
 .button-group{
-    margin-top:30px;
     display:flex;
-    gap:15px;
+    gap:14px;
+    margin-top:24px;
     flex-wrap:wrap;
 }
 
 .btn{
-    padding:15px 28px;
+    padding:14px 24px;
     border:none;
     border-radius:14px;
-    text-decoration:none;
-    color:white;
+    font-family:'Poppins',sans-serif;
+    font-size:14px;
     font-weight:600;
     cursor:pointer;
+    text-decoration:none;
     display:inline-flex;
     align-items:center;
     gap:10px;
@@ -352,113 +464,104 @@ input[type="file"]{
 
 .btn-primary{
     background:#c89b3c;
+    color:white;
+    box-shadow:0 6px 18px rgba(200,155,60,0.3);
+}
+
+.btn-primary:hover{
+    box-shadow:0 10px 24px rgba(200,155,60,0.4);
 }
 
 .btn-secondary{
-    background:#757575;
+    background:white;
+    color:#777;
+    border:1px solid #eee;
 }
 
-/* MOBILE */
+.btn-secondary:hover{
+    border-color:#c89b3c;
+    color:#c89b3c;
+}
 
-@media(max-width:900px){
+/* RESPONSIVE */
 
+@media(max-width:1000px){
     .sidebar{
         position:relative;
         width:100%;
         height:auto;
     }
-
     .wrapper{
         flex-direction:column;
     }
-
     .main{
-        margin-left:0;
         width:100%;
+        margin-left:0;
     }
 }
 
-@media(max-width:768px){
-
+@media(max-width:700px){
     .form-grid{
         grid-template-columns:1fr;
     }
-
     .full{
         grid-column:span 1;
-    }
-
-    .btn{
-        width:100%;
-        justify-content:center;
     }
 }
 
 </style>
-
 </head>
-
 <body>
 
 <div class="wrapper">
 
     <!-- SIDEBAR -->
 
-<div class="sidebar">
+    <div class="sidebar">
 
-    <div>
+        <div>
 
-        <div class="logo">
-            <h1>🍫 R & G <br><span>Chocolate</span></h1>
-        </div>
-
-        <div class="menu">
-
-            <!-- DASHBOARD -->
-
-            <a href="index.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : ''; ?>">
-                <i class="fas fa-chart-pie"></i>
-                Dashboard
-            </a>
-
-            <!-- ANALYTICS -->
-
-            <a href="analytics.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'analytics.php' ? 'active' : ''; ?>">
-                <i class="fas fa-chart-line"></i>
-                Analytics
-            </a>
-
-            <!-- SETTINGS -->
-
-            <a href="settings.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'settings.php' ? 'active' : ''; ?>">
-                <i class="fas fa-cog"></i>
-                Settings
-            </a>
-
-        </div>
-
-    </div>
-
-    <!-- USER -->
-
-    <div class="sidebar-footer">
-
-        <div class="user-box">
-
-            <div class="user-avatar">
-                A
+            <div class="logo">
+                <h1>🍫 R & G <br><span>Chocolate</span></h1>
             </div>
 
-            <div>
-                <div class="user-name">Administrator</div>
-                <div class="user-role">Admin</div>
+            <div class="menu">
+
+                <a href="index.php" class="<?= basename($_SERVER['PHP_SELF'])=='index.php'?'active':'' ?>">
+                    <i class="fas fa-chart-pie"></i>
+                    Dashboard
+                </a>
+
+                <a href="analytics.php" class="<?= basename($_SERVER['PHP_SELF'])=='analytics.php'?'active':'' ?>">
+                    <i class="fas fa-chart-line"></i>
+                    Analytics
+                </a>
+
+                <a href="settings.php" class="<?= basename($_SERVER['PHP_SELF'])=='settings.php'?'active':'' ?>">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="sidebar-footer">
+
+            <div class="user-box">
+
+                <div class="user-avatar">A</div>
+
+                <div>
+                    <div class="user-name">Administrator</div>
+                    <div class="user-role">Admin</div>
+                </div>
+
             </div>
 
         </div>
 
     </div>
-
-</div>
 
     <!-- MAIN -->
 
@@ -466,173 +569,177 @@ input[type="file"]{
 
         <div class="dashboard-container">
 
-            <div class="header">
+            <!-- TOPBAR -->
 
-                <h1>Add New Chocolate</h1>
+            <div class="topbar">
 
-                <p>
-                    Add delicious chocolate products into your inventory.
-                </p>
+                <div>
+                    <h2>Add New Chocolate</h2>
+                    <p>Fill in the details below to add a product to your inventory.</p>
+                </div>
+
+                <a href="index.php" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Back
+                </a>
 
             </div>
 
-            <?php if (!empty($error)): ?>
+            <!-- ALERT -->
 
+            <?php if(!empty($error)): ?>
             <div class="alert alert-error">
+                <i class="fas fa-circle-exclamation"></i>
                 <?= htmlspecialchars($error) ?>
             </div>
-
             <?php endif; ?>
+
+            <!-- FORM CARD -->
 
             <div class="form-card">
 
-
-                    <input
-                    type="text"
-                    name="category"
-                    placeholder="Enter category"
-                    required>
-
                 <form method="POST" enctype="multipart/form-data">
 
-                    <div class="form-grid">
+                    <!-- PRODUCT INFO -->
 
-                        <div class="input-group full">
+                    <div class="form-section">
 
-                            <label>Product Name</label>
-
-                            <input
-                            type="text"
-                            name="product_name"
-                            placeholder="Enter chocolate name"
-                            required>
-
+                        <div class="section-title">
+                            <i class="fas fa-tag"></i>
+                            Product Information
                         </div>
 
+                        <div class="form-grid">
 
-                        <div class="input-group">
+                            <div class="input-group full">
+                                <label>Product Name</label>
+                                <input type="text" name="product_name" placeholder="e.g. Dark Truffle Bar" required>
+                            </div>
 
-                            <label>Brand</label>
+                            <div class="input-group">
+                                <label>Brand</label>
+                                <input type="text" name="brand" placeholder="e.g. Cadbury">
+                            </div>
 
-                            <input
-                            type="text"
-                            name="brand"
-                            placeholder="Cadbury">
-
-                        </div>
-
-                        <div class="input-group">
-
-                            <label>Category</label>
-
-                            <select name="category" required>
-
-                                <option value="">Select Category</option>
-
-                                <option value="Milk Chocolate">
-                                    Milk Chocolate
-                                </option>
-
-                                <option value="Dark Chocolate">
-                                    Dark Chocolate
-                                </option>
-
-                                <option value="White Chocolate">
-                                    White Chocolate
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                        <div class="input-group">
-
-                            <label>Quantity</label>
-
-                            <input
-                            type="number"
-                            name="quantity"
-                            placeholder="0"
-                            required>
-
-                        </div>
-
-                        <div class="input-group">
-
-                            <label>Price</label>
-
-                            <input
-                            type="number"
-                            step="0.01"
-                            name="price"
-                            placeholder="0.00"
-                            required>
-
-                        </div>
-
-                        <div class="input-group">
-
-                            <label>Expiration Date</label>
-
-                            <input
-                            type="date"
-                            name="expiration_date">
-
-                        </div>
-
-                        <div class="input-group full">
-
-                            <label>Manufacturer</label>
-
-                            <input
-                            type="text"
-                            name="manufacturer"
-                            placeholder="Manufacturer name">
-
-                        </div>
-
-                        <div class="input-group full">
-
-                            <label>Supplier</label>
-
-                            <input
-                            type="text"
-                            name="supplier_name"
-                            placeholder="Supplier name">
-
-                        </div>
-
-                        <div class="input-group full">
-
-                            <label>Upload Images</label>
-
-                            <input
-                            type="file"
-                            name="images[]"
-                            multiple
-                            accept="image/*">
+                            <div class="input-group">
+                                <label>Category</label>
+                                <input
+                                    type="text"
+                                    name="category"
+                                    list="category-list"
+                                    placeholder="e.g. Milk Chocolate"
+                                    autocomplete="off"
+                                    required>
+                                <datalist id="category-list">
+                                    <option value="Milk Chocolate">
+                                    <option value="Dark Chocolate">
+                                    <option value="White Chocolate">
+                                </datalist>
+                            </div>
 
                         </div>
 
                     </div>
 
+                    <!-- STOCK & PRICING -->
+
+                    <div class="form-section">
+
+                        <div class="section-title">
+                            <i class="fas fa-boxes-stacked"></i>
+                            Stock & Pricing
+                        </div>
+
+                        <div class="form-grid">
+
+                            <div class="input-group">
+                                <label>Quantity</label>
+                                <input type="number" name="quantity" placeholder="0" min="0" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label>Price (₱)</label>
+                                <input type="number" step="0.01" name="price" placeholder="0.00" min="0" required>
+                            </div>
+
+                            <div class="input-group full">
+                                <label>Expiration Date</label>
+                                <input type="date" name="expiration_date">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- SUPPLIER & MANUFACTURER -->
+
+                    <div class="form-section">
+
+                        <div class="section-title">
+                            <i class="fas fa-truck"></i>
+                            Supplier & Manufacturer
+                        </div>
+
+                        <div class="form-grid">
+
+                            <div class="input-group">
+                                <label>Manufacturer</label>
+                                <input type="text" name="manufacturer" placeholder="e.g. Nestlé Philippines">
+                            </div>
+
+                            <div class="input-group">
+                                <label>Supplier</label>
+                                <input type="text" name="supplier_name" placeholder="e.g. Sweet Goods Co.">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- IMAGES -->
+
+                    <div class="form-section">
+
+                        <div class="section-title">
+                            <i class="fas fa-image"></i>
+                            Product Images
+                        </div>
+
+                        <div class="input-group">
+                            <label class="file-label" id="uploadArea">
+
+                                <input
+                                    type="file"
+                                    name="images[]"
+                                    multiple
+                                    accept="image/*"
+                                    id="fileInput">
+
+                                <div class="file-icon">
+                                    <i class="fas fa-cloud-arrow-up"></i>
+                                </div>
+
+                                <div class="file-text">Click to upload or drag & drop</div>
+                                <div class="file-hint">PNG, JPG, WEBP · Multiple files allowed</div>
+                                <div class="file-names" id="fileNames"></div>
+
+                            </label>
+                        </div>
+
+                    </div>
+
+                    <!-- BUTTONS -->
+
                     <div class="button-group">
 
-                        <button
-                        type="submit"
-                        name="submit"
-                        class="btn btn-primary">
-
+                        <button type="submit" name="submit" class="btn btn-primary">
                             <i class="fas fa-plus"></i>
                             Add Chocolate
-
                         </button>
 
                         <a href="index.php" class="btn btn-secondary">
-
-                            <i class="fas fa-arrow-left"></i>
-                            Back
-
+                            <i class="fas fa-xmark"></i>
+                            Cancel
                         </a>
 
                     </div>
@@ -646,6 +753,37 @@ input[type="file"]{
     </div>
 
 </div>
+
+<script>
+const fileInput = document.getElementById('fileInput');
+const fileNames = document.getElementById('fileNames');
+const uploadArea = document.getElementById('uploadArea');
+
+fileInput.addEventListener('change', function() {
+    const files = Array.from(this.files);
+    fileNames.textContent = files.length === 1
+        ? files[0].name
+        : files.length > 1
+            ? `${files.length} files selected`
+            : '';
+});
+
+uploadArea.addEventListener('dragover', e => {
+    e.preventDefault();
+    uploadArea.style.borderColor = '#c89b3c';
+    uploadArea.style.background = '#fdf8f0';
+});
+
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.style.borderColor = '';
+    uploadArea.style.background = '';
+});
+
+uploadArea.addEventListener('drop', () => {
+    uploadArea.style.borderColor = '';
+    uploadArea.style.background = '';
+});
+</script>
 
 </body>
 </html>

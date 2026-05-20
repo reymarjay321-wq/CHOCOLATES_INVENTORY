@@ -44,7 +44,6 @@ $categories = [];
 $totals = [];
 
 while($row = $categoryData->fetch_assoc()){
-
     $categories[] = $row['category'];
     $totals[] = $row['total'];
 }
@@ -60,9 +59,7 @@ while($row = $categoryData->fetch_assoc()){
 <title>Analytics Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -77,6 +74,7 @@ body{
     font-family:'Poppins',sans-serif;
     background:#f6f2ea;
     color:#333;
+    transition: background 0.3s, color 0.3s;
 }
 
 .wrapper{
@@ -97,6 +95,7 @@ body{
     flex-direction:column;
     justify-content:space-between;
     overflow:hidden;
+    transition: background 0.3s, border-color 0.3s;
 }
 
 .logo{
@@ -107,6 +106,7 @@ body{
     font-size:30px;
     color:#5d4037;
     line-height:1.3;
+    transition: color 0.3s;
 }
 
 .logo span{
@@ -143,6 +143,7 @@ body{
     margin-top:auto;
     border-top:1px solid #eee;
     padding-top:20px;
+    transition: border-color 0.3s;
 }
 
 .user-box{
@@ -152,6 +153,7 @@ body{
     background:white;
     border-radius:16px;
     padding:12px;
+    transition: background 0.3s;
 }
 
 .user-avatar{
@@ -169,6 +171,7 @@ body{
 .user-name{
     font-weight:600;
     font-size:14px;
+    transition: color 0.3s;
 }
 
 .user-role{
@@ -188,6 +191,7 @@ body{
     background:#fbf8f3;
     border-radius:25px;
     padding:30px;
+    transition: background 0.3s;
 }
 
 /* HEADER */
@@ -199,6 +203,7 @@ body{
 .header h1{
     font-size:34px;
     margin-bottom:10px;
+    transition: color 0.3s;
 }
 
 .header p{
@@ -222,6 +227,7 @@ body{
     display:flex;
     align-items:center;
     gap:18px;
+    transition: background 0.3s, border-color 0.3s;
 }
 
 .icon{
@@ -234,6 +240,7 @@ body{
     justify-content:center;
     align-items:center;
     font-size:22px;
+    flex-shrink:0;
 }
 
 .card h2{
@@ -246,39 +253,106 @@ body{
     font-size:13px;
 }
 
-.green{
-    color:#2e7d32;
-}
+.green  { color:#2e7d32; }
+.red    { color:#ef5350; }
+.orange { color:#ff9800; }
+.blue   { color:#42a5f5; }
 
-.red{
-    color:#ef5350;
-}
-
-.orange{
-    color:#ff9800;
-}
-
-.blue{
-    color:#42a5f5;
-}
-
-/* GRAPH */
+/* CHART */
 
 .chart-container{
     background:white;
     padding:30px;
     border-radius:25px;
     box-shadow:0 10px 25px rgba(0,0,0,0.05);
+    transition: background 0.3s, box-shadow 0.3s;
 }
 
 .chart-container h2{
     margin-bottom:20px;
     color:#5d4037;
+    transition: color 0.3s;
 }
 
 canvas{
     max-height:400px;
 }
+
+/* =====================
+   DARK MODE
+   ===================== */
+
+body.dark{
+    background:#1a1410;
+    color:#e8ddd0;
+}
+
+body.dark .sidebar{
+    background:#211a14;
+    border-color:#2e2318;
+}
+
+body.dark .logo h1{
+    color:#e8c97a;
+}
+
+body.dark .menu a{
+    color:#9e8a78;
+}
+
+body.dark .menu a:hover,
+body.dark .menu a.active{
+    background:#2e2318;
+    color:#c89b3c;
+}
+
+body.dark .sidebar-footer{
+    border-color:#2e2318;
+}
+
+body.dark .user-box{
+    background:#2a1f17;
+}
+
+body.dark .user-name{
+    color:#e8ddd0;
+}
+
+body.dark .dashboard-container{
+    background:#201811;
+}
+
+body.dark .header h1{
+    color:#e8c97a;
+}
+
+body.dark .header p{
+    color:#6e5a48;
+}
+
+body.dark .card{
+    background:#2a1f17;
+    border-color:#3a2a1e;
+}
+
+body.dark .card p{
+    color:#9e8a78;
+}
+
+body.dark .icon{
+    background:#3a2a1e;
+}
+
+body.dark .chart-container{
+    background:#2a1f17;
+    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+body.dark .chart-container h2{
+    color:#e8c97a;
+}
+
+/* RESPONSIVE */
 
 @media(max-width:900px){
 
@@ -341,20 +415,11 @@ canvas{
 
             <div class="user-box">
 
-                <div class="user-avatar">
-                    A
-                </div>
+                <div class="user-avatar">A</div>
 
                 <div>
-
-                    <div class="user-name">
-                        Administrator
-                    </div>
-
-                    <div class="user-role">
-                        Admin
-                    </div>
-
+                    <div class="user-name">Administrator</div>
+                    <div class="user-role">Admin</div>
                 </div>
 
             </div>
@@ -372,116 +437,71 @@ canvas{
             <!-- HEADER -->
 
             <div class="header">
-
                 <h1>Analytics Dashboard</h1>
-
-                <p>
-                    Overview of your chocolate inventory performance.
-                </p>
-
+                <p>Overview of your chocolate inventory performance.</p>
             </div>
 
             <!-- CARDS -->
 
             <div class="analytics-grid">
 
-                <!-- TOTAL PRODUCTS -->
-
                 <div class="card">
-
                     <div class="icon">
                         <i class="fas fa-box"></i>
                     </div>
-
                     <div>
                         <p>Total Products</p>
-                        <h2 class="blue">
-                            <?= $totalProducts ?>
-                        </h2>
+                        <h2 class="blue"><?= $totalProducts ?></h2>
                     </div>
-
                 </div>
 
-                <!-- TOTAL STOCK -->
-
                 <div class="card">
-
                     <div class="icon">
                         <i class="fas fa-cubes"></i>
                     </div>
-
                     <div>
                         <p>Total Stock</p>
-                        <h2 class="green">
-                            <?= $totalStock ?>
-                        </h2>
+                        <h2 class="green"><?= $totalStock ?></h2>
                     </div>
-
                 </div>
 
-                <!-- TOTAL VALUE -->
-
                 <div class="card">
-
                     <div class="icon">
                         <i class="fas fa-wallet"></i>
                     </div>
-
                     <div>
                         <p>Inventory Value</p>
-                        <h2 class="orange">
-                            ₱<?= number_format($totalValue,0) ?>
-                        </h2>
+                        <h2 class="orange">₱<?= number_format($totalValue,0) ?></h2>
                     </div>
-
                 </div>
 
-                <!-- LOW STOCK -->
-
                 <div class="card">
-
                     <div class="icon">
                         <i class="fas fa-exclamation-triangle"></i>
                     </div>
-
                     <div>
                         <p>Low Stock</p>
-                        <h2 class="red">
-                            <?= $lowStock ?>
-                        </h2>
+                        <h2 class="red"><?= $lowStock ?></h2>
                     </div>
-
                 </div>
 
-                <!-- EXPIRED -->
-
                 <div class="card">
-
                     <div class="icon">
                         <i class="fas fa-calendar-times"></i>
                     </div>
-
                     <div>
                         <p>Expired Products</p>
-                        <h2 class="red">
-                            <?= $expired ?>
-                        </h2>
+                        <h2 class="red"><?= $expired ?></h2>
                     </div>
-
                 </div>
 
             </div>
 
-            <!-- GRAPH -->
+            <!-- CHART -->
 
             <div class="chart-container">
-
-                <h2>
-                    Chocolate Categories Graph
-                </h2>
-
+                <h2>Chocolate Categories Graph</h2>
                 <canvas id="categoryChart"></canvas>
-
             </div>
 
         </div>
@@ -491,23 +511,29 @@ canvas{
 </div>
 
 <script>
+// Apply saved theme on load — must run before chart renders
+(function() {
+    const saved = localStorage.getItem('rg_theme') || 'light';
+    if (saved === 'dark') document.body.classList.add('dark');
+})();
+
+// Determine chart colors based on active theme
+function isDark() {
+    return document.body.classList.contains('dark');
+}
+
+const chartTextColor  = () => isDark() ? '#9e8a78' : '#666';
+const chartGridColor  = () => isDark() ? '#3a2a1e' : '#e0e0e0';
 
 const ctx = document.getElementById('categoryChart');
 
-new Chart(ctx, {
-
+const categoryChart = new Chart(ctx, {
     type: 'bar',
-
     data: {
-
         labels: <?= json_encode($categories) ?>,
-
         datasets: [{
-
             label: 'Products Per Category',
-
             data: <?= json_encode($totals) ?>,
-
             backgroundColor: [
                 '#c89b3c',
                 '#8d6e63',
@@ -516,32 +542,37 @@ new Chart(ctx, {
                 '#42a5f5',
                 '#ef5350'
             ],
-
             borderRadius: 12
-
         }]
     },
-
     options: {
-
         responsive: true,
-
         plugins: {
-
             legend: {
                 display: false
             }
         },
-
         scales: {
-
+            x: {
+                ticks: {
+                    color: chartTextColor()
+                },
+                grid: {
+                    color: chartGridColor()
+                }
+            },
             y: {
-                beginAtZero: true
+                beginAtZero: true,
+                ticks: {
+                    color: chartTextColor()
+                },
+                grid: {
+                    color: chartGridColor()
+                }
             }
         }
     }
 });
-
 </script>
 
 </body>
