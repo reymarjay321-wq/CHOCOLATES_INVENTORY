@@ -69,7 +69,7 @@ while($row = $categoryData->fetch_assoc()){
 
 body{
     font-family:'Poppins',sans-serif;
-    background:#f5f1e8;
+    background:#f6f2ea;
     color:#333;
 }
 
@@ -81,22 +81,25 @@ body{
 /* SIDEBAR */
 
 .sidebar{
-    width:260px;
-    background:white;
+    width:250px;
+    background:#fff;
     padding:30px 20px;
-    box-shadow:0 0 30px rgba(0,0,0,0.06);
     position:fixed;
     height:100vh;
+    border-right:1px solid #eee;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
 }
 
 .logo{
-    text-align:center;
     margin-bottom:40px;
 }
 
 .logo h1{
-    font-size:28px;
+    font-size:30px;
     color:#5d4037;
+    line-height:1.3;
 }
 
 .logo span{
@@ -106,7 +109,7 @@ body{
 .menu{
     display:flex;
     flex-direction:column;
-    gap:12px;
+    gap:10px;
 }
 
 .menu a{
@@ -123,25 +126,68 @@ body{
 
 .menu a:hover,
 .menu a.active{
-    background:#f7f1e3;
+    background:#f6efe2;
     color:#c89b3c;
+}
+
+/* USER */
+
+.sidebar-footer{
+    border-top:1px solid #eee;
+    padding-top:20px;
+}
+
+.user-box{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.user-avatar{
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    background:#c89b3c;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-weight:700;
+}
+
+.user-name{
+    font-weight:600;
+    font-size:14px;
+}
+
+.user-role{
+    font-size:12px;
+    color:#999;
 }
 
 /* MAIN */
 
 .main{
-    margin-left:260px;
-    width:calc(100% - 260px);
+    margin-left:250px;
+    width:calc(100% - 250px);
     padding:30px;
 }
+
+.dashboard-container{
+    background:#fbf8f3;
+    border-radius:25px;
+    padding:30px;
+}
+
+/* HEADER */
 
 .header{
     margin-bottom:30px;
 }
 
 .header h1{
-    font-size:36px;
-    margin-bottom:8px;
+    font-size:34px;
+    margin-bottom:10px;
 }
 
 .header p{
@@ -152,30 +198,31 @@ body{
 
 .analytics-grid{
     display:grid;
+
     grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
     gap:25px;
     margin-bottom:30px;
+
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:20px;
+
 }
 
 .card{
     background:white;
-    border-radius:25px;
-    padding:30px;
-    box-shadow:0 10px 25px rgba(0,0,0,0.05);
-}
-
-.card-top{
+    border-radius:20px;
+    padding:25px;
+    border:1px solid #eee;
     display:flex;
-    justify-content:space-between;
     align-items:center;
-    margin-bottom:20px;
+    gap:18px;
 }
 
 .icon{
     width:60px;
     height:60px;
-    border-radius:18px;
-    background:#f7f1e3;
+    border-radius:50%;
+    background:#f8efd9;
     color:#c89b3c;
     display:flex;
     justify-content:center;
@@ -184,13 +231,13 @@ body{
 }
 
 .card h2{
-    font-size:38px;
-    margin-bottom:8px;
+    font-size:32px;
+    margin-top:5px;
 }
 
 .card p{
     color:#888;
-    font-size:14px;
+    font-size:13px;
 }
 
 .green{
@@ -255,21 +302,53 @@ canvas{
 
     <div class="sidebar">
 
-        <div class="logo">
-            <h1>🍫 R & G <span>Chocolate</span></h1>
+        <div>
+
+            <div class="logo">
+                <h1>🍫 R & G <br><span>Chocolate</span></h1>
+            </div>
+
+            <div class="menu">
+
+                <a href="index.php">
+                    <i class="fas fa-chart-pie"></i>
+                    Dashboard
+                </a>
+
+                <a href="analytics.php" class="active">
+                    <i class="fas fa-chart-line"></i>
+                    Analytics
+                </a>
+
+                <a href="settings.php">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </a>
+
+            </div>
+
         </div>
 
-        <div class="menu">
+        <div class="sidebar-footer">
 
-            <a href="index.php">
-                <i class="fas fa-chart-pie"></i>
-                Dashboard
-            </a>
-
+            <div class="user-box">
+ 
             <a href="analytics.php" class="active">
                 <i class="fas fa-chart-line"></i>
                 Analytics
             </a>
+
+                <div class="user-avatar">
+                    A
+                </div>
+
+                <div>
+                    <div class="user-name">Administrator</div>
+                    <div class="user-role">Admin</div>
+                </div>
+
+            </div>
+ 
 
             <a href="settings.php">
                 <i class="fas fa-cog"></i>
@@ -284,23 +363,32 @@ canvas{
 
     <div class="main">
 
-        <div class="header">
+        <div class="dashboard-container">
 
-            <h1>Analytics Dashboard</h1>
+            <div class="header">
 
-            <p>
-                Overview of your chocolate inventory performance.
-            </p>
+                <h1>Analytics Dashboard</h1>
 
-        </div>
+                <p>
+                    Overview of your chocolate inventory performance.
+                </p>
 
+            </div>
+
+ 
         <!-- CARDS -->
 
         <div class="analytics-grid">
+            <div class="analytics-grid">
 
-            <div class="card">
+                <!-- TOTAL PRODUCTS -->
+ 
 
-                <div class="card-top">
+                <div class="card">
+
+                    <div class="icon">
+                        <i class="fas fa-box"></i>
+                    </div>
 
                     <div>
                         <p>Total Products</p>
@@ -309,17 +397,21 @@ canvas{
                         </h2>
                     </div>
 
-                    <div class="icon">
-                        <i class="fas fa-box"></i>
-                    </div>
-
                 </div>
+
 
             </div>
 
             <div class="card">
 
-                <div class="card-top">
+                <!-- TOTAL STOCK -->
+
+                <div class="card">
+
+
+                    <div class="icon">
+                        <i class="fas fa-cubes"></i>
+                    </div>
 
                     <div>
                         <p>Total Stock</p>
@@ -328,17 +420,21 @@ canvas{
                         </h2>
                     </div>
 
-                    <div class="icon">
-                        <i class="fas fa-cubes"></i>
-                    </div>
-
                 </div>
+
 
             </div>
 
             <div class="card">
 
-                <div class="card-top">
+                <!-- TOTAL VALUE -->
+
+                <div class="card">
+
+
+                    <div class="icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
 
                     <div>
                         <p>Inventory Value</p>
@@ -347,17 +443,21 @@ canvas{
                         </h2>
                     </div>
 
-                    <div class="icon">
-                        <i class="fas fa-wallet"></i>
-                    </div>
-
                 </div>
+
 
             </div>
 
             <div class="card">
 
-                <div class="card-top">
+                <!-- LOW STOCK -->
+
+                <div class="card">
+
+
+                    <div class="icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
 
                     <div>
                         <p>Low Stock</p>
@@ -366,27 +466,27 @@ canvas{
                         </h2>
                     </div>
 
-                    <div class="icon">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-
                 </div>
+
 
             </div>
 
             <div class="card">
 
-                <div class="card-top">
+                <!-- EXPIRED -->
+
+                <div class="card">
+
+
+                    <div class="icon">
+                        <i class="fas fa-calendar-times"></i>
+                    </div>
 
                     <div>
                         <p>Expired Products</p>
                         <h2 class="red">
                             <?= $expired ?>
                         </h2>
-                    </div>
-
-                    <div class="icon">
-                        <i class="fas fa-calendar-times"></i>
                     </div>
 
                 </div>
