@@ -14,12 +14,21 @@ if (isset($_GET['search'])) {
         OR brand LIKE ?
         OR category LIKE ?
         OR supplier_name LIKE ?
+        OR manufacturer LIKE ?
         ORDER BY date_added DESC
     ");
 
     $like = "%$search%";
 
-    $stmt->bind_param("ssss", $like, $like, $like, $like);
+    $stmt->bind_param(
+        "sssss",
+        $like,
+        $like,
+        $like,
+        $like,
+        $like
+    );
+
     $stmt->execute();
 
     $result = $stmt->get_result();
@@ -35,16 +44,25 @@ if (isset($_GET['search'])) {
 $totalRecords = $result ? $result->num_rows : 0;
 
 // TOTAL STOCK
-$totalStockQuery = $conn->query("SELECT SUM(quantity) AS total_stock FROM chocolates");
+$totalStockQuery = $conn->query("
+SELECT SUM(quantity) AS total_stock 
+FROM chocolates
+");
+
 $totalStock = $totalStockQuery->fetch_assoc()['total_stock'] ?? 0;
 
 // TOTAL VALUE
-$totalValueQuery = $conn->query("SELECT SUM(quantity * price) AS total_value FROM chocolates");
+$totalValueQuery = $conn->query("
+SELECT SUM(quantity * price) AS total_value 
+FROM chocolates
+");
+
 $totalValue = $totalValueQuery->fetch_assoc()['total_value'] ?? 0;
 
 // DELETE ALL
 if (isset($_POST['delete_all'])) {
 
+    $conn->query("TRUNCATE TABLE chocolate_images");
     $conn->query("TRUNCATE TABLE chocolates");
 
     header("Location: index.php?success=deleted");
@@ -62,6 +80,7 @@ if (isset($_POST['delete_all'])) {
 <title>Chocolate Inventory Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
 <style>
@@ -138,40 +157,6 @@ body{
     color:#c89b3c;
 }
 
-.sidebar-footer{
-    border-top:1px solid #eee;
-    padding-top:20px;
-}
-
-.user-box{
-    display:flex;
-    align-items:center;
-    gap:12px;
-}
-
-.user-avatar{
-    width:50px;
-    height:50px;
-    border-radius:50%;
-    background:#c89b3c;
-    color:white;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-weight:700;
-}
-
-.user-name{
-    font-weight:600;
-}
-
-.user-role{
-    font-size:13px;
-    color:#999;
-}
-
-/* MAIN */
-
 .main{
     margin-left:260px;
     width:calc(100% - 260px);
@@ -229,14 +214,7 @@ body{
     display:flex;
     align-items:center;
     gap:10px;
-    transition:0.3s;
 }
-
-.add-btn:hover{
-    transform:translateY(-3px);
-}
-
-/* STATS */
 
 .stats{
     display:grid;
@@ -256,7 +234,6 @@ body{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-bottom:18px;
 }
 
 .card-icon{
@@ -273,7 +250,6 @@ body{
 
 .card h2{
     font-size:34px;
-    margin-bottom:5px;
 }
 
 .card p{
@@ -297,11 +273,6 @@ body{
     align-items:center;
     margin-bottom:20px;
     flex-wrap:wrap;
-    gap:15px;
-}
-
-.table-header h2{
-    font-size:24px;
 }
 
 .delete-all{
@@ -317,7 +288,7 @@ body{
 .inventory-table{
     width:100%;
     border-collapse:collapse;
-    min-width:1100px;
+    min-width:1300px;
 }
 
 .inventory-table thead{
@@ -327,19 +298,13 @@ body{
 .inventory-table th{
     padding:18px;
     text-align:left;
-    font-size:14px;
     color:#888;
-    font-weight:600;
+    font-size:14px;
 }
 
 .inventory-table td{
     padding:18px;
     border-bottom:1px solid #f1f1f1;
-    font-size:14px;
-}
-
-.inventory-table tr:hover{
-    background:#fafafa;
 }
 
 .product-cell{
@@ -354,7 +319,6 @@ body{
     border-radius:18px;
     overflow:hidden;
     background:#f3f3f3;
-    flex-shrink:0;
 }
 
 .product-img img{
@@ -375,7 +339,6 @@ body{
 
 .product-name{
     font-weight:600;
-    margin-bottom:4px;
 }
 
 .brand{
@@ -436,22 +399,11 @@ body{
     padding:16px 20px;
     border-radius:18px;
     margin-bottom:20px;
-    font-weight:500;
 }
 
 .empty{
     text-align:center;
     padding:80px 20px;
-}
-
-.empty i{
-    font-size:80px;
-    color:#ddd;
-    margin-bottom:20px;
-}
-
-.empty h2{
-    margin-bottom:10px;
 }
 
 @media(max-width:1000px){
@@ -469,26 +421,6 @@ body{
     .main{
         width:100%;
         margin-left:0;
-    }
-}
-
-@media(max-width:768px){
-
-    .main{
-        padding:20px;
-    }
-
-    .stats{
-        grid-template-columns:1fr;
-    }
-
-    .topbar{
-        flex-direction:column;
-        align-items:stretch;
-    }
-
-    .search-box{
-        max-width:100%;
     }
 }
 
@@ -515,16 +447,6 @@ body{
                     Dashboard
                 </a>
 
-                <a href="index.php">
-                    <i class="fas fa-box"></i>
-                    Inventory
-                </a>
-
-                <a href="create.php">
-                    <i class="fas fa-plus-circle"></i>
-                    Add Product
-                </a>
-
                 <a href="analytics.php">
                     <i class="fas fa-chart-line"></i>
                     Analytics
@@ -539,31 +461,11 @@ body{
 
         </div>
 
-        <div class="sidebar-footer">
-
-            <div class="user-box">
-
-                <div class="user-avatar">
-                    RG
-                </div>
-
-                <div>
-                    <div class="user-name">Administrator</div>
-                    <div class="user-role">Inventory Manager</div>
-                </div>
-
-            </div>
-
-        </div>
-
     </div>
-
 
     <!-- MAIN -->
 
     <div class="main">
-
-        <!-- TOPBAR -->
 
         <div class="topbar">
 
@@ -588,9 +490,6 @@ body{
 
         </div>
 
-
-        <!-- ALERT -->
-
         <?php if(isset($_GET['success'])): ?>
 
         <div class="alert">
@@ -599,13 +498,11 @@ body{
 
         <?php endif; ?>
 
-
         <!-- STATS -->
 
         <div class="stats">
 
             <div class="card">
-
                 <div class="card-top">
                     <div>
                         <p>Total Products</p>
@@ -616,11 +513,9 @@ body{
                         <i class="fas fa-box"></i>
                     </div>
                 </div>
-
             </div>
 
             <div class="card">
-
                 <div class="card-top">
                     <div>
                         <p>Total Stock</p>
@@ -631,11 +526,9 @@ body{
                         <i class="fas fa-cubes"></i>
                     </div>
                 </div>
-
             </div>
 
             <div class="card">
-
                 <div class="card-top">
                     <div>
                         <p>Inventory Value</p>
@@ -646,26 +539,9 @@ body{
                         <i class="fas fa-wallet"></i>
                     </div>
                 </div>
-
-            </div>
-
-            <div class="card">
-
-                <div class="card-top">
-                    <div>
-                        <p>Categories</p>
-                        <h2>6+</h2>
-                    </div>
-
-                    <div class="card-icon">
-                        <i class="fas fa-layer-group"></i>
-                    </div>
-                </div>
-
             </div>
 
         </div>
-
 
         <!-- TABLE -->
 
@@ -696,21 +572,23 @@ body{
 
             </div>
 
-
             <?php if($totalRecords > 0): ?>
 
             <table class="inventory-table">
 
                 <thead>
+
                     <tr>
                         <th>Product</th>
                         <th>Category</th>
+                        <th>Manufacturer</th>
                         <th>Supplier</th>
                         <th>Quantity</th>
                         <th>Price</th>
                         <th>Expiration</th>
                         <th>Actions</th>
                     </tr>
+
                 </thead>
 
                 <tbody>
@@ -755,6 +633,7 @@ body{
                             </div>
 
                             <div>
+
                                 <div class="product-name">
                                     <?= htmlspecialchars($row['product_name']) ?>
                                 </div>
@@ -762,6 +641,7 @@ body{
                                 <div class="brand">
                                     <?= htmlspecialchars($row['brand']) ?>
                                 </div>
+
                             </div>
 
                         </div>
@@ -772,6 +652,10 @@ body{
                         <span class="category-badge">
                             <?= htmlspecialchars($row['category']) ?>
                         </span>
+                    </td>
+
+                    <td>
+                        <?= htmlspecialchars($row['manufacturer']) ?>
                     </td>
 
                     <td>
@@ -807,7 +691,7 @@ body{
                             <a
                             href="delete.php?id=<?= $row['id'] ?>"
                             class="action-btn delete"
-                            onclick="return confirm('Delete this item?')">
+                            onclick="return confirm('Delete this product?')">
 
                                 <i class="fas fa-trash"></i>
 
@@ -836,13 +720,6 @@ body{
                 <p style="color:#999;margin-top:10px;">
                     Add your first chocolate product.
                 </p>
-
-                <br>
-
-                <a href="create.php" class="add-btn" style="display:inline-flex;">
-                    <i class="fas fa-plus"></i>
-                    Add Product
-                </a>
 
             </div>
 

@@ -202,8 +202,7 @@ body{
 }
 
 /* INPUTS */
-input,
-select{
+input{
     width:100%;
     padding:15px 18px;
     border-radius:16px;
@@ -214,8 +213,7 @@ select{
     outline:none;
 }
 
-input:focus,
-select:focus{
+input:focus{
     border-color:#ff9800;
     background:white;
     box-shadow:0 8px 25px rgba(255,152,0,0.15);
@@ -400,23 +398,11 @@ input[type="file"]{
                         Category
                     </label>
 
-                    <select name="category" required>
-
-                        <option value="">Select Category</option>
-
-                        <option value="Milk Chocolate">
-                            Milk Chocolate
-                        </option>
-
-                        <option value="Dark Chocolate">
-                            Dark Chocolate
-                        </option>
-
-                        <option value="White Chocolate">
-                            White Chocolate
-                        </option>
-
-                    </select>
+                    <input
+                    type="text"
+                    name="category"
+                    placeholder="Enter category"
+                    required>
 
                 </div>
 

@@ -1,17 +1,5 @@
 <?php
 include 'db.php';
-
-$success = "";
-
-// UPDATE SYSTEM NAME
-if(isset($_POST['save_settings'])){
-
-    $system_name = trim($_POST['system_name']);
-    $admin_name = trim($_POST['admin_name']);
-    $theme = trim($_POST['theme']);
-
-    $success = "Settings saved successfully!";
-}
 ?>
 
 <!DOCTYPE html>
@@ -24,7 +12,6 @@ if(isset($_POST['save_settings'])){
 <title>Settings</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
 <style>
@@ -116,63 +103,57 @@ body{
     color:#888;
 }
 
-/* SETTINGS CARD */
+.settings-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:25px;
+}
 
-.settings-card{
+.card{
     background:white;
     border-radius:25px;
-    padding:35px;
+    padding:30px;
     box-shadow:0 10px 25px rgba(0,0,0,0.05);
-    max-width:700px;
 }
 
-.form-group{
-    margin-bottom:25px;
+.card h2{
+    margin-bottom:15px;
+    color:#5d4037;
 }
 
-.form-group label{
+.setting-item{
+    margin-bottom:20px;
+}
+
+.setting-item label{
     display:block;
-    margin-bottom:10px;
-    font-weight:600;
+    margin-bottom:8px;
+    font-weight:500;
 }
 
-.form-group input,
-.form-group select{
+.setting-item input{
     width:100%;
-    height:55px;
-    border:none;
-    background:#f7f7f7;
-    border-radius:15px;
-    padding:0 18px;
+    padding:14px;
+    border:1px solid #ddd;
+    border-radius:12px;
     outline:none;
-    font-size:15px;
+    font-size:14px;
 }
 
 .save-btn{
-    border:none;
     background:#c89b3c;
     color:white;
-    padding:15px 30px;
-    border-radius:15px;
+    border:none;
+    padding:14px 24px;
+    border-radius:14px;
     font-weight:600;
     cursor:pointer;
     transition:0.3s;
 }
 
 .save-btn:hover{
-    transform:translateY(-3px);
+    transform:translateY(-2px);
 }
-
-.alert{
-    background:#e8f5e9;
-    color:#2e7d32;
-    padding:15px 20px;
-    border-radius:15px;
-    margin-bottom:20px;
-    font-weight:500;
-}
-
-/* MOBILE */
 
 @media(max-width:900px){
 
@@ -193,7 +174,6 @@ body{
 }
 
 </style>
-
 </head>
 <body>
 
@@ -212,16 +192,6 @@ body{
             <a href="index.php">
                 <i class="fas fa-chart-pie"></i>
                 Dashboard
-            </a>
-
-            <a href="inventory.php">
-                <i class="fas fa-box"></i>
-                Inventory
-            </a>
-
-            <a href="create.php">
-                <i class="fas fa-plus-circle"></i>
-                Add Product
             </a>
 
             <a href="analytics.php">
@@ -244,80 +214,57 @@ body{
 
         <div class="header">
 
-            <h1>System Settings</h1>
+            <h1>Settings</h1>
 
             <p>
-                Manage your inventory system preferences.
+                Manage your chocolate inventory system settings.
             </p>
 
         </div>
 
-        <?php if($success): ?>
+        <div class="settings-grid">
 
-        <div class="alert">
-            <?= $success ?>
-        </div>
+            <div class="card">
 
-        <?php endif; ?>
+                <h2>Profile Settings</h2>
 
-        <div class="settings-card">
-
-            <form method="POST">
-
-                <!-- SYSTEM NAME -->
-
-                <div class="form-group">
-
-                    <label>System Name</label>
-
-                    <input
-                    type="text"
-                    name="system_name"
-                    value="R & G Chocolate Inventory">
-
-                </div>
-
-                <!-- ADMIN NAME -->
-
-                <div class="form-group">
-
+                <div class="setting-item">
                     <label>Administrator Name</label>
-
-                    <input
-                    type="text"
-                    name="admin_name"
-                    value="Administrator">
-
+                    <input type="text" value="Administrator">
                 </div>
 
-                <!-- THEME -->
-
-                <div class="form-group">
-
-                    <label>Theme</label>
-
-                    <select name="theme">
-
-                        <option>Light Mode</option>
-                        <option>Dark Mode</option>
-
-                    </select>
-
+                <div class="setting-item">
+                    <label>Email Address</label>
+                    <input type="email" value="admin@email.com">
                 </div>
 
-                <!-- SAVE BUTTON -->
-
-                <button
-                type="submit"
-                name="save_settings"
-                class="save-btn">
-
+                <button class="save-btn">
                     <i class="fas fa-save"></i>
-                    Save Settings
-
+                    Save Changes
                 </button>
 
-            </form>
+            </div>
+
+            <div class="card">
+
+                <h2>System Settings</h2>
+
+                <div class="setting-item">
+                    <label>Store Name</label>
+                    <input type="text" value="R & G Chocolate">
+                </div>
+
+                <div class="setting-item">
+                    <label>Currency</label>
+                    <input type="text" value="PHP Peso (₱)">
+                </div>
+
+                <button class="save-btn">
+                    <i class="fas fa-cog"></i>
+                    Update Settings
+                </button>
+
+            </div>
 
         </div>
 
