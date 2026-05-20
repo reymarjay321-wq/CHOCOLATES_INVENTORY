@@ -14,8 +14,11 @@ $totalValue = $conn->query("SELECT SUM(quantity * price) AS value FROM chocolate
 ->fetch_assoc()['value'] ?? 0;
 
 // LOW STOCK
-$lowStock = $conn->query("SELECT COUNT(*) AS lowstock FROM chocolates WHERE quantity <= 5")
-->fetch_assoc()['lowstock'];
+$lowStock = $conn->query("
+SELECT COUNT(*) AS lowstock 
+FROM chocolates 
+WHERE quantity <= 5
+")->fetch_assoc()['lowstock'];
 
 // EXPIRED PRODUCTS
 $expired = $conn->query("
@@ -24,6 +27,21 @@ FROM chocolates
 WHERE expiration_date < CURDATE()
 ")->fetch_assoc()['expired'];
 
+// CATEGORY GRAPH
+$categoryData = $conn->query("
+SELECT category, COUNT(*) as total
+FROM chocolates
+GROUP BY category
+");
+
+$categories = [];
+$totals = [];
+
+while($row = $categoryData->fetch_assoc()){
+
+    $categories[] = $row['category'];
+    $totals[] = $row['total'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -38,6 +56,8 @@ WHERE expiration_date < CURDATE()
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
@@ -178,8 +198,14 @@ body{
 
 .analytics-grid{
     display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:25px;
+    margin-bottom:30px;
+
     grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
     gap:20px;
+
 }
 
 .card{
@@ -228,6 +254,24 @@ body{
 
 .blue{
     color:#42a5f5;
+}
+
+/* GRAPH */
+
+.chart-container{
+    background:white;
+    padding:30px;
+    border-radius:25px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.05);
+}
+
+.chart-container h2{
+    margin-bottom:20px;
+    color:#5d4037;
+}
+
+canvas{
+    max-height:400px;
 }
 
 @media(max-width:900px){
@@ -288,6 +332,11 @@ body{
         <div class="sidebar-footer">
 
             <div class="user-box">
+ 
+            <a href="analytics.php" class="active">
+                <i class="fas fa-chart-line"></i>
+                Analytics
+            </a>
 
                 <div class="user-avatar">
                     A
@@ -299,6 +348,12 @@ body{
                 </div>
 
             </div>
+ 
+
+            <a href="settings.php">
+                <i class="fas fa-cog"></i>
+                Settings
+            </a>
 
         </div>
 
@@ -320,9 +375,14 @@ body{
 
             </div>
 
+ 
+        <!-- CARDS -->
+
+        <div class="analytics-grid">
             <div class="analytics-grid">
 
                 <!-- TOTAL PRODUCTS -->
+ 
 
                 <div class="card">
 
@@ -339,9 +399,15 @@ body{
 
                 </div>
 
+
+            </div>
+
+            <div class="card">
+
                 <!-- TOTAL STOCK -->
 
                 <div class="card">
+
 
                     <div class="icon">
                         <i class="fas fa-cubes"></i>
@@ -356,9 +422,15 @@ body{
 
                 </div>
 
+
+            </div>
+
+            <div class="card">
+
                 <!-- TOTAL VALUE -->
 
                 <div class="card">
+
 
                     <div class="icon">
                         <i class="fas fa-wallet"></i>
@@ -373,9 +445,15 @@ body{
 
                 </div>
 
+
+            </div>
+
+            <div class="card">
+
                 <!-- LOW STOCK -->
 
                 <div class="card">
+
 
                     <div class="icon">
                         <i class="fas fa-exclamation-triangle"></i>
@@ -390,9 +468,15 @@ body{
 
                 </div>
 
+
+            </div>
+
+            <div class="card">
+
                 <!-- EXPIRED -->
 
                 <div class="card">
+
 
                     <div class="icon">
                         <i class="fas fa-calendar-times"></i>
@@ -411,9 +495,75 @@ body{
 
         </div>
 
+        <!-- GRAPH -->
+
+        <div class="chart-container">
+
+            <h2>
+                Chocolate Categories Graph
+            </h2>
+
+            <canvas id="categoryChart"></canvas>
+
+        </div>
+
     </div>
 
 </div>
+
+<script>
+
+const ctx = document.getElementById('categoryChart');
+
+new Chart(ctx, {
+
+    type: 'bar',
+
+    data: {
+
+        labels: <?= json_encode($categories) ?>,
+
+        datasets: [{
+
+            label: 'Products Per Category',
+
+            data: <?= json_encode($totals) ?>,
+
+            backgroundColor: [
+                '#c89b3c',
+                '#8d6e63',
+                '#ff9800',
+                '#5d4037',
+                '#42a5f5',
+                '#ef5350'
+            ],
+
+            borderRadius: 12
+
+        }]
+    },
+
+    options: {
+
+        responsive: true,
+
+        plugins: {
+
+            legend: {
+                display: false
+            }
+        },
+
+        scales: {
+
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+</script>
 
 </body>
 </html>

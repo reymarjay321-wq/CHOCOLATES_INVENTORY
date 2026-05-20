@@ -24,7 +24,6 @@ if(isset($_POST['save_settings'])){
 <title>Settings</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
 <style>
@@ -162,6 +161,11 @@ body{
     color:#888;
 }
 
+.settings-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:25px;
+}
 /* ALERT */
 
 .alert{
@@ -175,28 +179,42 @@ body{
 
 /* SETTINGS CARD */
 
-.settings-card{
+.card{
     background:white;
+    border-radius:25px;
+    padding:30px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.05);
     border-radius:22px;
     padding:35px;
     border:1px solid #eee;
     max-width:750px;
 }
 
-.form-group{
-    margin-bottom:25px;
+.card h2{
+    margin-bottom:15px;
+    color:#5d4037;
 }
 
-.form-group label{
+.setting-item{
+    margin-bottom:20px;
+}
+
+.setting-item label{
     display:block;
+    margin-bottom:8px;
+    font-weight:500;
     margin-bottom:10px;
     font-weight:600;
     font-size:14px;
 }
 
-.form-group input,
-.form-group select{
+.setting-item input{
     width:100%;
+    padding:14px;
+    border:1px solid #ddd;
+    border-radius:12px;
+    outline:none;
+    font-size:14px;
     height:55px;
     border:1px solid #eee;
     background:#fafafa;
@@ -214,9 +232,10 @@ body{
 }
 
 .save-btn{
-    border:none;
     background:#c89b3c;
     color:white;
+    border:none;
+    padding:14px 24px;
     padding:15px 28px;
     border-radius:14px;
     font-weight:600;
@@ -250,7 +269,6 @@ body{
 }
 
 </style>
-
 </head>
 <body>
 
@@ -289,6 +307,10 @@ body{
 
         <div class="sidebar-footer">
 
+            <a href="analytics.php">
+                <i class="fas fa-chart-line"></i>
+                Analytics
+            </a>
             <div class="user-box">
 
                 <div class="user-avatar">
@@ -312,6 +334,11 @@ body{
 
         <div class="dashboard-container">
 
+            <h1>Settings</h1>
+
+            <p>
+                Manage your chocolate inventory system settings.
+            </p>
             <div class="header">
 
                 <h1>System Settings</h1>
@@ -320,6 +347,47 @@ body{
                     Manage your inventory system preferences.
                 </p>
 
+        <div class="settings-grid">
+
+            <div class="card">
+
+                <h2>Profile Settings</h2>
+
+                <div class="setting-item">
+                    <label>Administrator Name</label>
+                    <input type="text" value="Administrator">
+                </div>
+
+                <div class="setting-item">
+                    <label>Email Address</label>
+                    <input type="email" value="admin@email.com">
+                </div>
+
+                <button class="save-btn">
+                    <i class="fas fa-save"></i>
+                    Save Changes
+                </button>
+
+            </div>
+
+            <div class="card">
+
+                <h2>System Settings</h2>
+
+                <div class="setting-item">
+                    <label>Store Name</label>
+                    <input type="text" value="R & G Chocolate">
+                </div>
+
+                <div class="setting-item">
+                    <label>Currency</label>
+                    <input type="text" value="PHP Peso (₱)">
+                </div>
+
+                <button class="save-btn">
+                    <i class="fas fa-cog"></i>
+                    Update Settings
+                </button>
             </div>
 
             <?php if($success): ?>

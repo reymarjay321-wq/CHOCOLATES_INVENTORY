@@ -289,8 +289,13 @@ body{
     font-size:14px;
 }
 
+
+/* INPUTS */
+input{
+
 input,
 select{
+
     width:100%;
     height:55px;
     border:1px solid #eee;
@@ -302,9 +307,14 @@ select{
     transition:0.3s;
 }
 
+
+input:focus{
+    border-color:#ff9800;
+=======
 input:focus,
 select:focus{
     border-color:#c89b3c;
+
     background:white;
 }
 
@@ -476,6 +486,13 @@ input[type="file"]{
 
             <div class="form-card">
 
+
+                    <input
+                    type="text"
+                    name="category"
+                    placeholder="Enter category"
+                    required>
+
                 <form method="POST" enctype="multipart/form-data">
 
                     <div class="form-grid">
@@ -491,6 +508,7 @@ input[type="file"]{
                             required>
 
                         </div>
+
 
                         <div class="input-group">
 

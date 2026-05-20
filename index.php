@@ -14,12 +14,21 @@ if (isset($_GET['search'])) {
         OR brand LIKE ?
         OR category LIKE ?
         OR supplier_name LIKE ?
+        OR manufacturer LIKE ?
         ORDER BY date_added DESC
     ");
 
     $like = "%$search%";
 
-    $stmt->bind_param("ssss", $like, $like, $like, $like);
+    $stmt->bind_param(
+        "sssss",
+        $like,
+        $like,
+        $like,
+        $like,
+        $like
+    );
+
     $stmt->execute();
 
     $result = $stmt->get_result();
@@ -35,16 +44,25 @@ if (isset($_GET['search'])) {
 $totalRecords = $result ? $result->num_rows : 0;
 
 // TOTAL STOCK
-$totalStockQuery = $conn->query("SELECT SUM(quantity) AS total_stock FROM chocolates");
+$totalStockQuery = $conn->query("
+SELECT SUM(quantity) AS total_stock 
+FROM chocolates
+");
+
 $totalStock = $totalStockQuery->fetch_assoc()['total_stock'] ?? 0;
 
 // TOTAL VALUE
-$totalValueQuery = $conn->query("SELECT SUM(quantity * price) AS total_value FROM chocolates");
+$totalValueQuery = $conn->query("
+SELECT SUM(quantity * price) AS total_value 
+FROM chocolates
+");
+
 $totalValue = $totalValueQuery->fetch_assoc()['total_value'] ?? 0;
 
 // DELETE ALL
 if (isset($_POST['delete_all'])) {
 
+    $conn->query("TRUNCATE TABLE chocolate_images");
     $conn->query("TRUNCATE TABLE chocolates");
 
     header("Location: index.php?success=deleted");
@@ -62,6 +80,7 @@ if (isset($_POST['delete_all'])) {
 <title>Chocolate Inventory Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
 <style>
@@ -138,6 +157,8 @@ body{
     color:#c89b3c;
 }
 
+
+
 .sidebar-footer{
     border-top:1px solid #eee;
     padding-top:20px;
@@ -172,6 +193,7 @@ body{
 }
 
 /* MAIN */
+
 
 .main{
     margin-left:250px;
@@ -232,8 +254,6 @@ body{
     gap:10px;
 }
 
-/* STATS */
-
 .stats{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
@@ -247,8 +267,11 @@ body{
     padding:22px;
     display:flex;
     align-items:center;
+
+
     gap:18px;
     border:1px solid #f1f1f1;
+
 }
 
 .card-icon{
@@ -264,8 +287,12 @@ body{
 }
 
 .card h2{
+
+    font-size:34px;
+
     font-size:30px;
     margin-top:5px;
+
 }
 
 .card p{
@@ -287,10 +314,14 @@ body{
     justify-content:space-between;
     align-items:center;
     margin-bottom:20px;
+
+    flex-wrap:wrap;
+
 }
 
 .table-header h2{
     font-size:22px;
+
 }
 
 .delete-all{
@@ -306,10 +337,26 @@ body{
 .inventory-table{
     width:100%;
     border-collapse:collapse;
+
+    min-width:1300px;
+}
+
+.inventory-table thead{
+    background:#faf7f1;
+
 }
 
 .inventory-table th{
     text-align:left;
+
+    color:#888;
+    font-size:14px;
+}
+
+.inventory-table td{
+    padding:18px;
+    border-bottom:1px solid #f1f1f1;
+
     padding:15px;
     font-size:13px;
     color:#888;
@@ -320,6 +367,7 @@ body{
     padding:15px;
     border-bottom:1px solid #f3f3f3;
     font-size:14px;
+
 }
 
 .product-cell{
@@ -405,8 +453,24 @@ body{
 }
 
 .delete{
+
+    background:#ef5350;
+}
+
+.alert{
+    background:#e8f5e9;
+    color:#2e7d32;
+    padding:16px 20px;
+    border-radius:18px;
+    margin-bottom:20px;
+}
+
+.empty{
+    text-align:center;
+    padding:80px 20px;
     background:#ffefef;
     color:#ef5350;
+
 }
 
 @media(max-width:1000px){
@@ -464,6 +528,7 @@ body{
 
         </div>
 
+
         <div class="sidebar-footer">
 
             <div class="user-box">
@@ -481,12 +546,13 @@ body{
 
         </div>
 
-    </div>
+
 
     <!-- MAIN -->
 
     <div class="main">
 
+        <div class="topbar">
         <div class="dashboard-container">
 
             <!-- TOPBAR -->
@@ -497,6 +563,13 @@ body{
 
                     <i class="fas fa-search"></i>
 
+        </div>
+
+        <?php if(isset($_GET['success'])): ?>
+
+        <div class="alert">
+            Action completed successfully!
+        </div>
                     <input
                     type="text"
                     name="search"
@@ -510,12 +583,15 @@ body{
                     Add Product
                 </a>
 
+        <!-- STATS -->
             </div>
 
             <!-- STATS -->
 
             <div class="stats">
 
+            <div class="card">
+                <div class="card-top">
                 <div class="card">
                     <div class="card-icon">
                         <i class="fas fa-box"></i>
@@ -531,6 +607,11 @@ body{
                     <div class="card-icon">
                         <i class="fas fa-cubes"></i>
                     </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-top">
 
                     <div>
                         <p>Total Stock</p>
@@ -542,12 +623,18 @@ body{
                     <div class="card-icon">
                         <i class="fas fa-wallet"></i>
                     </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-top">
 
                     <div>
                         <p>Inventory Value</p>
                         <h2>₱<?= number_format($totalValue,0) ?></h2>
                     </div>
                 </div>
+            </div>
 
             </div>
 
@@ -561,6 +648,7 @@ body{
 
                     <?php if($totalRecords > 0): ?>
 
+        <!-- TABLE -->
                     <form method="POST">
 
                         <button
@@ -607,6 +695,7 @@ body{
                     LIMIT 1
                     ");
 
+            <?php if($totalRecords > 0): ?>
                     $imgStmt->bind_param("i", $row['id']);
                     $imgStmt->execute();
 
@@ -614,6 +703,35 @@ body{
 
                     ?>
 
+                <thead>
+
+                    <tr>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Manufacturer</th>
+                        <th>Supplier</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Expiration</th>
+                        <th>Actions</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                <?php while($row = $result->fetch_assoc()): ?>
+
+                <?php
+
+                $imgStmt = $conn->prepare("
+                SELECT image FROM chocolate_images
+                WHERE chocolate_id=?
+                LIMIT 1
+                ");
+
+                $imgStmt->bind_param("i", $row['id']);
+                $imgStmt->execute();
                     <tr>
 
                         <td>
@@ -634,6 +752,35 @@ body{
 
                             </div>
 
+                            <div>
+
+                                <div class="product-name">
+                                    <?= htmlspecialchars($row['product_name']) ?>
+                                </div>
+
+                                <div class="brand">
+                                    <?= htmlspecialchars($row['brand']) ?>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+                    <td>
+                        <span class="category-badge">
+                            <?= htmlspecialchars($row['category']) ?>
+                        </span>
+                    </td>
+
+                    <td>
+                        <?= htmlspecialchars($row['manufacturer']) ?>
+                    </td>
+
+                    <td>
+                        <?= htmlspecialchars($row['supplier_name']) ?>
+                    </td>
                         </td>
 
                         <td>
@@ -664,6 +811,10 @@ body{
                             </span>
                         </td>
 
+                            <a
+                            href="delete.php?id=<?= $row['id'] ?>"
+                            class="action-btn delete"
+                            onclick="return confirm('Delete this product?')">
                         <td class="price">
                             ₱<?= number_format($row['price'],2) ?>
                         </td>
