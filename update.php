@@ -80,8 +80,16 @@ if (isset($_POST['update'])) {
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Edit Chocolate</title>
+
+<!-- NO-FLASH DARK MODE: must be first script in head -->
+<script>
+(function(){
+    if(localStorage.getItem('rg_theme')==='dark'){
+        document.documentElement.classList.add('dark');
+    }
+})();
+</script>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -98,6 +106,7 @@ body{
     font-family:'Poppins',sans-serif;
     background:#f6f2ea;
     color:#333;
+    transition:background 0.3s,color 0.3s;
 }
 
 .wrapper{
@@ -119,6 +128,7 @@ body{
     top:0;
     height:100vh;
     border-right:1px solid #eee;
+    transition:background 0.3s,border-color 0.3s;
 }
 
 .logo{
@@ -129,6 +139,7 @@ body{
     font-size:30px;
     color:#5d4037;
     line-height:1.3;
+    transition:color 0.3s;
 }
 
 .logo span{
@@ -163,6 +174,7 @@ body{
 .sidebar-footer{
     border-top:1px solid #eee;
     padding-top:20px;
+    transition:border-color 0.3s;
 }
 
 .user-box{
@@ -186,6 +198,7 @@ body{
 .user-name{
     font-weight:600;
     font-size:14px;
+    transition:color 0.3s;
 }
 
 .user-role{
@@ -205,6 +218,7 @@ body{
     background:#fbf8f3;
     border-radius:25px;
     padding:25px;
+    transition:background 0.3s;
 }
 
 /* TOPBAR */
@@ -220,6 +234,7 @@ body{
 .topbar h2{
     font-size:22px;
     color:#5d4037;
+    transition:color 0.3s;
 }
 
 .topbar p{
@@ -285,6 +300,7 @@ body{
     display:flex;
     align-items:center;
     gap:16px;
+    transition:background 0.3s,border-color 0.3s;
 }
 
 .info-card-icon{
@@ -298,12 +314,14 @@ body{
     justify-content:center;
     font-size:20px;
     flex-shrink:0;
+    transition:background 0.3s;
 }
 
 .info-card-name{
     font-size:17px;
     font-weight:700;
     color:#5d4037;
+    transition:color 0.3s;
 }
 
 .info-card-meta{
@@ -323,6 +341,7 @@ body{
     border-radius:20px;
     padding:25px;
     border:1px solid #eee;
+    transition:background 0.3s,border-color 0.3s;
 }
 
 /* SECTION */
@@ -345,6 +364,7 @@ body{
     display:flex;
     align-items:center;
     gap:10px;
+    transition:color 0.3s,border-color 0.3s;
 }
 
 .section-title i{
@@ -357,6 +377,7 @@ body{
     align-items:center;
     justify-content:center;
     font-size:13px;
+    transition:background 0.3s;
 }
 
 /* GRID */
@@ -383,6 +404,7 @@ body{
     font-size:13px;
     font-weight:600;
     color:#555;
+    transition:color 0.3s;
 }
 
 .input-group input{
@@ -451,6 +473,7 @@ body{
     background:white;
     color:#777;
     border:1px solid #eee;
+    transition:background 0.3s,border-color 0.3s,color 0.3s;
 }
 
 .btn-secondary:hover{
@@ -461,28 +484,78 @@ body{
 /* RESPONSIVE */
 
 @media(max-width:1000px){
-    .sidebar{
-        position:relative;
-        width:100%;
-        height:auto;
-    }
-    .wrapper{
-        flex-direction:column;
-    }
-    .main{
-        width:100%;
-        margin-left:0;
-    }
+    .sidebar{ position:relative; width:100%; height:auto; }
+    .wrapper{ flex-direction:column; }
+    .main{ width:100%; margin-left:0; }
 }
 
 @media(max-width:700px){
-    .form-grid{
-        grid-template-columns:1fr;
-    }
-    .full{
-        grid-column:span 1;
-    }
+    .form-grid{ grid-template-columns:1fr; }
+    .full{ grid-column:span 1; }
 }
+
+/* =====================
+   DARK MODE
+   ===================== */
+
+html.dark body{ background:#1a1410; color:#e8ddd0; }
+
+html.dark .sidebar{ background:#211a14; border-color:#2e2318; }
+html.dark .logo h1{ color:#e8c97a; }
+html.dark .menu a{ color:#9e8a78; }
+html.dark .menu a:hover,
+html.dark .menu a.active{ background:#2e2318; color:#c89b3c; }
+html.dark .sidebar-footer{ border-color:#2e2318; }
+html.dark .user-name{ color:#e8ddd0; }
+
+html.dark .dashboard-container{ background:#201811; }
+html.dark .topbar h2{ color:#e8c97a; }
+html.dark .topbar p{ color:#6e5a48; }
+
+html.dark .back-btn{
+    background:#2a1f17;
+    border-color:#3a2a1e;
+    color:#9e8a78;
+}
+html.dark .back-btn:hover{
+    border-color:#c89b3c;
+    color:#c89b3c;
+}
+
+html.dark .info-card{ background:#2a1f17; border-color:#3a2a1e; }
+html.dark .info-card-icon{ background:#3a2a1e; }
+html.dark .info-card-name{ color:#e8c97a; }
+html.dark .info-card-meta{ color:#6e5a48; }
+
+html.dark .form-card{ background:#2a1f17; border-color:#3a2a1e; }
+
+html.dark .section-title{ color:#e8c97a; border-color:#3a2a1e; }
+html.dark .section-title i{ background:#3a2a1e; }
+
+html.dark .input-group label{ color:#c4a882; }
+html.dark .input-group input{
+    background:#1a1410;
+    border-color:#3a2a1e;
+    color:#e8ddd0;
+}
+html.dark .input-group input::placeholder{ color:#6e5a48; }
+html.dark .input-group input:focus{
+    background:#211a14;
+    border-color:#c89b3c;
+}
+
+html.dark .btn-secondary{
+    background:#2a1f17;
+    border-color:#3a2a1e;
+    color:#9e8a78;
+}
+html.dark .btn-secondary:hover{
+    border-color:#c89b3c;
+    color:#c89b3c;
+}
+
+html.dark .alert-success{ background:#1a2e1c; color:#81c784; }
+html.dark .alert-error{ background:#3d1a1a; color:#ef9a9a; }
 
 </style>
 </head>
@@ -660,7 +733,7 @@ body{
                             </div>
 
                             <div class="input-group">
-                                <label>Price (₱)</label>
+                                <label>Price (&#8369;)</label>
                                 <input type="number" step="0.01" name="price" value="<?= $row['price'] ?>" min="0" required>
                             </div>
 
